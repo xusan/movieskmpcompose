@@ -1,5 +1,4 @@
 import SwiftUI
-import Shared
 
 struct ContentView: View
 {
@@ -20,8 +19,11 @@ struct ContentView: View
             {
                 VStack(spacing: 16)
                 {
-                    Image(systemName: "swift").font(.system(size: 200)).foregroundColor(.accentColor)
-                    Text("SwiftUI: \(Greeting().greet())")
+                    Image(systemName: "swift")
+                        .font(.system(size: 200))
+                        .foregroundColor(.accentColor)
+                    
+                    Text("SwiftUI: Hello")
                 }
                 .transition(.move(edge: .top).combined(with: .opacity))
             }
