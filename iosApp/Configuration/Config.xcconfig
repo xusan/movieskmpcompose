@@ -1,0 +1,7 @@
+TEAM_ID=
+
+PRODUCT_NAME=movieskmpcompose
+PRODUCT_BUNDLE_IDENTIFIER=com.movieskmp.compose.movieskmpcompose.movieskmpcompose$(TEAM_ID)
+
+CURRENT_PROJECT_VERSION=1
+MARKETING_VERSION=1.0
