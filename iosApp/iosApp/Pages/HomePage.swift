@@ -1,0 +1,47 @@
+//
+//  HomePage.swift
+//  iosApp
+//
+//  Created by xusan on 24/11/25.
+//
+
+import SwiftUI
+
+struct HomePage: View {
+    @EnvironmentObject var adapter: PageViewModelObservable
+    var vm: MoviesPageViewModel { adapter.raw as! MoviesPageViewModel }
+
+    var body: some View {
+        SwiftUIBasePage(viewModel: adapter.raw) {
+            VStack(spacing: 20) {
+                Text("Home").font(.largeTitle)
+                Button("Details") {
+                    Task {
+                        try await SwiftUIPageNavigationService.shared.Navigate(
+                            name: "MovieDetailPageViewModel",
+                            parameters: NavigationParameters(),
+                            useModalNavigation: false,
+                            animated: true,
+                            wrapIntoNav: false
+                        )
+                    }
+                }
+                Button("Logout -> Root Login") {
+                    Task {
+                        try await SwiftUIPageNavigationService.shared.Navigate(
+                            name: "/LoginPageViewModel",
+                            parameters: NavigationParameters(),
+                            useModalNavigation: false,
+                            animated: true,
+                            wrapIntoNav: false
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+#Preview {
+    HomePage()
+}

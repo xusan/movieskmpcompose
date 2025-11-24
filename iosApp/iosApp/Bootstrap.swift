@@ -7,16 +7,16 @@ class Bootstrap
         let preferences = try! KoinResolver().GetPreferences()
         let isLoggedIn = preferences.Get(LoginPageViewModel.companion.IsLoggedIn, default: false)
 
-        if isLoggedIn
-        {
-            let mainPage = String(describing: MoviesPageViewModel.self)
-            try! await navigationService.Navigate(name: "/\(mainPage)", parameters: nil, useModalNavigation: false, animated: false, wrapIntoNav: false)
-        }
-        else
-        {
+//        if isLoggedIn
+//        {
+//            let mainPage = String(describing: MoviesPageViewModel.self)
+//            try! await navigationService.Navigate(name: "/\(mainPage)", parameters: nil, useModalNavigation: false, animated: false, wrapIntoNav: false)
+//        }
+//        else
+//        {
             let loginPage = String(describing: LoginPageViewModel.self)
             try! await navigationService.Navigate(name: "/\(loginPage)", parameters: nil, useModalNavigation: false, animated: false, wrapIntoNav: false)
-        }
+        //}
     }
     
    
@@ -54,6 +54,10 @@ class Bootstrap
 //        NavRegistrar.RegisterPageForNavigation({ MoviesPage() }, { MoviesPageViewModel(injectedService: services) })
 //        NavRegistrar.RegisterPageForNavigation({ MovieDetailPage() }, { MovieDetailPageViewModel(injectedService: services) })
 //        NavRegistrar.RegisterPageForNavigation({ AddEditMoviePage() }, { AddEditMoviePageViewModel(injectedService: services) })
+                
+        NavRegistrar.RegisterPageForNavigation({ LoginPage() }, { LoginPageViewModel(injectedService: services) })
+        NavRegistrar.RegisterPageForNavigation({ HomePage() }, { MoviesPageViewModel(injectedService: services) })
+        NavRegistrar.RegisterPageForNavigation({ DetailsPage() }, { MovieDetailPageViewModel(injectedService: services) })
     }
 }
 
@@ -69,6 +73,7 @@ typealias AddEditMoviePageViewModel = SharedAppCore.AddEditMoviePageViewModel
 typealias PageInjectedServices = SharedAppCore.PageInjectedServices
 typealias IPageNavigationService = SharedAppCore.IPageNavigationService
 typealias NavigationParameters = SharedAppCore.NavigationParameters
+typealias INavigationParameters = SharedAppCore.INavigationParameters
 typealias UrlNavigationHelper = SharedAppCore.UrlNavigationHelper
 typealias KoinResolver = SharedAppCore.KoinResolver
 typealias KoinRegistrationKt = SharedAppCore.KoinRegistrationKt
