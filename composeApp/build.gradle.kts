@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    id("io.sentry.android.gradle") version "5.12.1"
 }
 
 kotlin {
@@ -19,6 +20,8 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation("io.insert-koin:koin-core:3.5.6")
+            implementation("com.github.bumptech.glide:glide:4.16.0")
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -50,12 +53,27 @@ android {
     }
     packaging {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += setOf(
+                "/META-INF/{AL2.0,LGPL2.1}",
+                "META-INF/LICENSE*",
+                "META-INF/NOTICE*",
+                "META-INF/native-image/io.sentry/sentry/native-image.properties"
+            )
         }
     }
     buildTypes {
+        getByName("debug") {
+            isMinifyEnabled = false   // ❌ Disable shrinking for debug builds
+            isShrinkResources = false // ❌ Don’t remove unused resources
+        }
         getByName("release") {
-            isMinifyEnabled = false
+            isMinifyEnabled = true    // ✅ Enable shrinking, obfuscation, and optimization
+            isShrinkResources = true  // ✅ Also shrink unused resources (optional)
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -68,3 +86,27 @@ dependencies {
     debugImplementation(compose.uiTooling)
 }
 
+sentry {
+    // Auto-Install Sentry dependencies
+    autoInstallation {
+        enabled = false
+    }
+
+    //Read from the environment variable
+    val token = System.getenv("SENTRY_AUTH_TOKEN") ?: ""
+    //⚠️ NOTE you need to save it in the environment variable for example: in PowerSheell - setx SENTRY_AUTH_TOKEN "paste_your_token"
+    if (token.isNotBlank())
+    {
+        // The slug of the Sentry organization to use for uploading proguard mappings/source contexts.
+        org.set("freelance-6m")
+        projectName.set("kotlin-bestapp")
+        authToken.set(token)
+
+        debug = false
+        includeSourceContext = true
+    }
+    else
+    {
+        println("⚠️ SENTRY_AUTH_TOKEN is not set — skipping Sentry upload configuration.")
+    }
+}

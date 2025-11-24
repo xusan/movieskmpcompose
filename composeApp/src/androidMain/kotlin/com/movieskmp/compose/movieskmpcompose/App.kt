@@ -31,7 +31,7 @@ import movieskmpcompose.composeapp.generated.resources.compose_multiplatform
                 Text("Click me!")
             }
             AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
+                val greeting = remember { "Hello Android Compose" }
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
