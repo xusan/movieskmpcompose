@@ -1,8 +1,8 @@
 import SwiftUI
-
+import SharedAppCore
 
 struct BootstrapView: View {
-    @EnvironmentObject var nav: iOSNavigationService
+    //@EnvironmentObject var nav: iOSNavigationService
     @State private var started = false
     
     var body: some View
@@ -14,16 +14,19 @@ struct BootstrapView: View {
 
                 Task
                 {
-                    //for now just get true
-                    let isLogged = true//await AuthService.shared.isLoggedIn()
+                    let navService = try! KoinResolver().GetNavigationService()
+                    let preferences = try! KoinResolver().GetPreferences()
+                    let isLoggedIn = preferences.Get(LoginPageViewModel.companion.IsLoggedIn, default: false)
+                    
+                    let nav = navService as! iOSNavigationService                    
 
-                    if isLogged
+                    if isLoggedIn
                     {
-                        await nav.setRoot(vmName: "FirstViewModel")
+                        await nav.setRoot(vmName: "SecondViewModel")
                     }
                     else
                     {
-                        await nav.setRoot(vmName: "SecondViewModel")
+                        await nav.setRoot(vmName: "FirstViewModel")
                     }
                 }
             }
