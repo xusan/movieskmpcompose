@@ -1,17 +1,17 @@
-import Foundation
 import SwiftUI
 
-/// Registration record for a ViewModel -> zero-arg SwiftUI Page pair.
 final class NavPageInfo {
     let vmName: String
-    let vmFactory: () -> PageViewModel
-    let pageFactory: () -> AnyView
+    let createVm: () -> PageViewModel
+    let createPage: () -> AnyView
 
-    init(vmName: String,
-         vmFactory: @escaping () -> PageViewModel,
-         pageFactory: @escaping () -> AnyView) {
+    init(
+        vmName: String,
+        createVm: @escaping () -> PageViewModel,
+        createPage: @escaping () -> AnyView
+    ) {
         self.vmName = vmName
-        self.vmFactory = vmFactory
-        self.pageFactory = pageFactory
+        self.createVm = createVm
+        self.createPage = createPage
     }
 }

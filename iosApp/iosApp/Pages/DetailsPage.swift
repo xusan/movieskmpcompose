@@ -12,32 +12,35 @@ struct DetailsPage: View {
     var vm: MovieDetailPageViewModel { adapter.raw as! MovieDetailPageViewModel }
 
     var body: some View {
-        SwiftUIBasePage(viewModel: adapter.raw) {
-            VStack(spacing: 20) {
-                Text("Details").font(.largeTitle)
-                Button("Back") {
-                    Task {
+        VStack(spacing: 20) {
+            Text("Details").font(.largeTitle)
+            Button("Back") {
+                Task {
+                    try await SwiftUIPageNavigationService.shared.Navigate(
+                        name: "../",
+                        parameters: NavigationParameters(),
+                        useModalNavigation: false,
+                        animated: true,
+                        wrapIntoNav: false
+                    )
+                }
+            }
+            
+            Button("Push Login as Root") {
+                Task {
                         try await SwiftUIPageNavigationService.shared.Navigate(
-                            name: "../",
+                            name: "/LoginPageViewModel",
                             parameters: NavigationParameters(),
                             useModalNavigation: false,
                             animated: true,
                             wrapIntoNav: false
                         )
-                    }
                 }
-                
-                Button("Push Root Login (demo)") {
-                    Task {
-                       try await SwiftUIPageNavigationService.shared.NavigateToRoot(parameters: NavigationParameters())
-//                        try await SwiftUIPageNavigationService.shared.Navigate(
-//                            name: "/LoginPageViewModel",
-//                            parameters: NavigationParameters(),
-//                            useModalNavigation: false,
-//                            animated: true,
-//                            wrapIntoNav: false
-//                        )
-                    }
+            }
+            
+            Button("Navigate to Root") {
+                Task {
+                    try await SwiftUIPageNavigationService.shared.NavigateToRoot(parameters: NavigationParameters())
                 }
             }
         }

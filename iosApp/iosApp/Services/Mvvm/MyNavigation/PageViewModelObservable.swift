@@ -9,19 +9,15 @@ final class PageViewModelObservable: ObservableObject {
 
     init(vm: PageViewModel) {
         self.raw = vm
-
-        // Forward KMP PropertyChanged to SwiftUI updates
         listener = { [weak self] _ in
             DispatchQueue.main.async {
                 self?.objectWillChange.send()
             }
         }
-        self.raw.PropertyChanged.AddListener(listener_: listener!)
+        vm.PropertyChanged.AddListener(listener_: listener!)
     }
 
     deinit {
-        if let l = listener {
-            raw.PropertyChanged.RemoveListener(listener_: l)
-        }
+        if let listener { raw.PropertyChanged.RemoveListener(listener_: listener) }
     }
 }

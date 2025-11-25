@@ -12,30 +12,28 @@ struct HomePage: View {
     var vm: MoviesPageViewModel { adapter.raw as! MoviesPageViewModel }
 
     var body: some View {
-        SwiftUIBasePage(viewModel: adapter.raw) {
-            VStack(spacing: 20) {
-                Text("Home").font(.largeTitle)
-                Button("Details") {
-                    Task {
-                        try await SwiftUIPageNavigationService.shared.Navigate(
-                            name: "MovieDetailPageViewModel",
-                            parameters: NavigationParameters(),
-                            useModalNavigation: false,
-                            animated: true,
-                            wrapIntoNav: false
-                        )
-                    }
+        VStack(spacing: 20) {
+            Text("Home").font(.largeTitle)
+            Button("Details") {
+                Task {
+                    try await SwiftUIPageNavigationService.shared.Navigate(
+                        name: "MovieDetailPageViewModel",
+                        parameters: NavigationParameters(),
+                        useModalNavigation: false,
+                        animated: true,
+                        wrapIntoNav: false
+                    )
                 }
-                Button("Logout -> Root Login") {
-                    Task {
-                        try await SwiftUIPageNavigationService.shared.Navigate(
-                            name: "/LoginPageViewModel",
-                            parameters: NavigationParameters(),
-                            useModalNavigation: false,
-                            animated: true,
-                            wrapIntoNav: false
-                        )
-                    }
+            }
+            Button("Push Login as Root") {
+                Task {
+                    try await SwiftUIPageNavigationService.shared.Navigate(
+                        name: "/LoginPageViewModel",
+                        parameters: NavigationParameters(),
+                        useModalNavigation: false,
+                        animated: true,
+                        wrapIntoNav: false
+                    )
                 }
             }
         }
