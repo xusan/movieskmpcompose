@@ -39,11 +39,13 @@ public struct BaseView<Content: View, VM: PageViewModel>: View, IBaseView
     }
 }
 
+//Gets kmp IPage
 public protocol IBaseView
 {
     func GetPage() -> IPage
 }
 
+//KMP wrapper
 public class Page : IPage
 {
     public var ViewModel: PageViewModel
