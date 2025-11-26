@@ -4,31 +4,49 @@ final class SwiftUIPageNavigationService: NSObject, ObservableObject, IPageNavig
     
     static let shared = SwiftUIPageNavigationService()
 
-    @Published var entries: [PageEntry] = []
-    private var vmStore: [UUID: PageViewModel] = [:]
+    @Published var Stack: [PageItem] = []
 
     private override init() {}
 
-    var CanNavigateBack: Bool { entries.count > 1 }
+    var CanNavigateBack: Bool { Stack.count > 1 }
 
     func GetCurrentPage() -> (any IPage)? { nil }
 
     func GetCurrentPageModel() -> PageViewModel?
     {
-        guard let last = entries.last else { return nil }
-        return vmStore[last.id]
+        guard let last = Stack.last else { return nil }
+        return last.Vm
     }
 
-    func GetNavStackModels() -> [PageViewModel] {
-        entries.compactMap { vmStore[$0.id] }
+    func GetNavStackModels() -> [PageViewModel]
+    {
+        Stack.compactMap { $0.Vm }
     }
 
-    func GetRootPageModel() -> PageViewModel? {
-        guard let first = entries.first else { return nil }
-        return vmStore[first.id]
+    func GetRootPageModel() -> PageViewModel?
+    {
+        guard let first = Stack.first else { return nil }
+        return first.Vm
+    }
+    
+    //This is a Sync version of navigation, and used mostly on app startup to set root page
+    //Sync version is more prefered at app startup
+    //because Async version takes some delay to navigate due to async nature and user can see black root view if Async version is used
+    func OnNavigateFirstTime(_ url: String, _ params: INavigationParameters)
+    {
+        let vmName = url.replacingOccurrences(of: "/", with: "")
+        let info = NavRegistrar.GetPageInfo(vmName: vmName)
+        let vm = info.createVm()
+        vm.Initialize(parameters: params)
+        vm.OnNavigatedTo(parameters: params)
+        vm.OnAppeared()
+        
+        let newRoot = PageItem(vmName, vm)
+        Stack = [newRoot]
     }
 
-    func NavigateToRoot(parameters: (any INavigationParameters)?) async throws {
+    func NavigateToRoot(parameters: (any INavigationParameters)?) async throws
+    {
         try await popToRoot(params: parameters ?? NavigationParameters())
     }
 
@@ -38,7 +56,8 @@ final class SwiftUIPageNavigationService: NSObject, ObservableObject, IPageNavig
         useModalNavigation: Bool,
         animated: Bool,
         wrapIntoNav: Bool
-    ) async throws {
+    ) async throws
+    {
         let params = parameters ?? NavigationParameters()
         let nav = UrlNavigationHelper.companion.Parse(url: url)
 
@@ -72,83 +91,72 @@ final class SwiftUIPageNavigationService: NSObject, ObservableObject, IPageNavig
 
     private func OnPushAsync(vmName: String, params: INavigationParameters, animated: Bool) async throws
     {
-        let info = NavRegistrar.getPageInfo(vmName: vmName)
+        let info = NavRegistrar.GetPageInfo(vmName: vmName)
 
-        if let lastEntry = entries.last
+        if let oldTopItem = Stack.last
         {
-            let vm = vmStore[lastEntry.id]
-            vm?.OnNavigatedFrom(parameters: NavigationParameters())
+            oldTopItem.Vm.OnNavigatedFrom(parameters: NavigationParameters())
         }
         
         let vm = info.createVm()
-        vm.Initialize(parameters: params)
-        vm.OnNavigatedTo(parameters: params)
-        
-        let entry = PageEntry(vmName: vmName)
-        vmStore[entry.id] = vm
+        let newItem = PageItem(vmName, vm)
+        newItem.Vm.Initialize(parameters: params)
+        newItem.Vm.OnNavigatedTo(parameters: params)
 
-        entries.append(entry)
+        Stack.append(newItem)
         try await Task.sleep(for: .seconds(0.3))
         
-        vm.OnAppeared()
+        newItem.Vm.OnAppeared()
     }
 
     // MARK: POP
 
     private func OnPopAsync(params: INavigationParameters) async throws
     {
-        guard let oldEntry = entries.last else { return }
-        guard entries.count >= 2 else { return }
-        let newEntry = entries[entries.count - 2]
-               
-        let oldVm = vmStore[oldEntry.id]
-        oldVm?.OnNavigatedFrom(parameters: NavigationParameters())
-        vmStore[oldEntry.id] = nil
+        guard let oldTopItem = Stack.last else { return }
+        guard Stack.count >= 2 else { return }
+        
+        oldTopItem.Vm.OnNavigatedFrom(parameters: NavigationParameters())
        
-        if let vm = vmStore[newEntry.id]
-        {
-            vm.OnNavigatedTo(parameters: params)
-        }
+        let newTopItem = Stack[Stack.count - 2]
+        newTopItem.Vm.OnNavigatedTo(parameters: params)
 
-        entries.removeLast()
+        Stack.removeLast()
         
         try await Task.sleep(for: .seconds(0.3))
 
-        oldVm?.Destroy()
+        oldTopItem.Vm.Destroy()
     }
 
     private func popToRoot(params: INavigationParameters) async throws
     {
-        guard entries.count > 1 else { return }
+        guard Stack.count > 1 else { return }
 
-        if(entries.count == 2)
+        if(Stack.count == 2)
         {
             try await OnPopAsync(params: params)
         }
         else
         {
             // OnNavigatedFrom only for the current top (before changes)
-            if let oldTop = entries.last, let oldVm = vmStore[oldTop.id]
+            if let oldTopItem = Stack.last
             {
-                oldVm.OnNavigatedFrom(parameters: NavigationParameters())
-            }
-            let root = entries.first!
-            if let vm = vmStore[root.id]
-            {
-                vm.OnNavigatedTo(parameters: params)
-                //vm.OnAppeared()
+                oldTopItem.Vm.OnNavigatedFrom(parameters: NavigationParameters())
             }
             
-            let entriesToRemove = entries.dropFirst()
+            let root = Stack.first!
+            root.Vm.OnNavigatedTo(parameters: params)
             
-            entries = [root]
+            let removedItems = Stack.dropFirst()
+            
+            Stack = [root]
             
             try await Task.sleep(for: .seconds(0.3))   // 0.3 seconds
             
-            for e in entriesToRemove
+            // Destroy all removed VMs
+            for removedItem in removedItems
             {
-                vmStore[e.id]?.Destroy()
-                vmStore[e.id] = nil
+                removedItem.Vm.Destroy()
             }
         }
     }
@@ -159,32 +167,28 @@ final class SwiftUIPageNavigationService: NSObject, ObservableObject, IPageNavig
     {
         let popCount = url.split(separator: "/").count
         guard popCount > 0 else { return }
-        guard popCount < entries.count else { return } // keep root
-        
-        // Determine final count to keep
-        let newCount = entries.count - popCount
-        // entries to remove
-        let removedEntries = entries[newCount...]
-        
+        guard popCount < Stack.count else { return } // keep root
+                
         // OnNavigatedFrom only for the current top (before changes)
-        if let oldTop = entries.last, let oldVm = vmStore[oldTop.id]
+        if let oldTopItem = Stack.last
         {
-            oldVm.OnNavigatedFrom(parameters: NavigationParameters())
+            oldTopItem.Vm.OnNavigatedFrom(parameters: NavigationParameters())
         }
         
+        // Determine final count to keep
+        let newCount = Stack.count - popCount
+        // entries to remove
+        let removedItems = Stack[newCount...]
+        
         // Assign final array once: SwiftUI performs single pop animation
-        entries = Array(entries.prefix(newCount))
+        Stack = Array(Stack.prefix(newCount))
         
         try? await Task.sleep(for: .seconds(0.30))
         
         // Destroy all removed VMs
-        for entry in removedEntries
+        for removedItem in removedItems
         {
-            if let vm = vmStore[entry.id]
-            {
-                vm.Destroy()
-                vmStore[entry.id] = nil
-            }
+            removedItem.Vm.Destroy()
         }
     }
 
@@ -192,42 +196,36 @@ final class SwiftUIPageNavigationService: NSObject, ObservableObject, IPageNavig
     {
         let popCount = url.split(separator: "/").count - 1
         guard popCount > 0 else { return }
-        guard popCount < entries.count else { return }
+        guard popCount < Stack.count else { return }
         
         // new VM name is the url with ../ removed
         let newVmName = url.replacingOccurrences(of: "../", with: "")
         
         // create new vm & entry inline
-        let info = NavRegistrar.getPageInfo(vmName: newVmName)
+        let info = NavRegistrar.GetPageInfo(vmName: newVmName)
         let vm = info.createVm()
-        vm.Initialize(parameters: params)
-        
-        let newEntry = PageEntry(vmName: newVmName)
-        vmStore[newEntry.id] = vm
+        let newItem = PageItem(newVmName, vm)
+        newItem.Vm.Initialize(parameters: params)
         
         // OnNavigatedFrom only for previous top
-        if let oldTop = entries.last, let oldVm = vmStore[oldTop.id]
+        if let oldTop = Stack.last
         {
-            oldVm.OnNavigatedFrom(parameters: NavigationParameters())
+            oldTop.Vm.OnNavigatedFrom(parameters: NavigationParameters())
         }
-        vm.OnNavigatedTo(parameters: params)
+        newItem.Vm.OnNavigatedTo(parameters: params)
         
         // compute new stack keeping prefix and adding newEntry
-        let newCount = entries.count - popCount
-        let removedEntries = entries[newCount...]
+        let newCount = Stack.count - popCount
+        let removedItems = Stack[newCount...]
         
         // final array assigned once -> SwiftUI animates a single push
-        entries = Array(entries.prefix(newCount)) + [newEntry]
+        Stack = Array(Stack.prefix(newCount)) + [newItem]
         try? await Task.sleep(for: .seconds(0.30))
-        
-        // Destroy removed VMs
-        for entry in removedEntries
+                
+        // Destroy all removed VMs
+        for removedItem in removedItems
         {
-            if let vm = vmStore[entry.id]
-            {
-                vm.Destroy()
-                vmStore[entry.id] = nil
-            }
+            removedItem.Vm.Destroy()
         }
     }
 
@@ -236,29 +234,27 @@ final class SwiftUIPageNavigationService: NSObject, ObservableObject, IPageNavig
         let vmName = url
             .replacingOccurrences(of: "/", with: "")
         
-        var newRoot: PageEntry
-        let oldEntries = entries
+        var newRoot: PageItem
+        let removedItems = Stack
         
         //if has existing pages
-        if entries.count > 0
+        if Stack.count > 0
         {
             //Push new page first → this animates
             try await OnPushAsync(vmName: vmName, params: params, animated: animated)
             
             //get this new pushed page, it will be new root
-            newRoot = entries.last!
+            newRoot = Stack.last!
         }
         else
         {
             //if there is no other pages then just create this root and it will be pushed without animation below
-            let info = NavRegistrar.getPageInfo(vmName: vmName)
+            let info = NavRegistrar.GetPageInfo(vmName: vmName)
             let vm = info.createVm()
-            vm.Initialize(parameters: params)
-            vm.OnNavigatedTo(parameters: params)
-            vm.OnAppeared()
-            
-            newRoot = PageEntry(vmName: vmName)
-            vmStore[newRoot.id] = vm
+            newRoot = PageItem(vmName, vm)
+            newRoot.Vm.Initialize(parameters: params)
+            newRoot.Vm.OnNavigatedTo(parameters: params)
+            newRoot.Vm.OnAppeared()
         }
         
         // Keep only the new page,
@@ -267,17 +263,13 @@ final class SwiftUIPageNavigationService: NSObject, ObservableObject, IPageNavig
         transaction.disablesAnimations = true
         withTransaction(transaction)
         {
-            entries = [newRoot]
+            Stack = [newRoot]
         }
        
-        // Destroy removed VMs
-        for entry in oldEntries
+        // Destroy all removed VMs
+        for removedItem in removedItems
         {
-            if let vm = vmStore[entry.id]
-            {
-                vm.Destroy()
-                vmStore[entry.id] = nil
-            }
+            removedItem.Vm.Destroy()
         }
     }
 
@@ -292,57 +284,48 @@ final class SwiftUIPageNavigationService: NSObject, ObservableObject, IPageNavig
         guard !names.isEmpty else { return }
         
         // OnNavigatedFrom for previous item in this push sequence (if any)
-        if let prev = entries.last, let prevVm = vmStore[prev.id]
+        if let oldTopItem = Stack.last
         {
-            prevVm.OnNavigatedFrom(parameters: NavigationParameters())
+            oldTopItem.Vm.OnNavigatedFrom(parameters: NavigationParameters())
         }
         
-        var newEntries: [PageEntry] = []
+        var newItems: [PageItem] = []
         
         // Push sequence into local array (so we don't touch the global entries until final)
         for name in names
         {
-            let info = NavRegistrar.getPageInfo(vmName: name)
+            let info = NavRegistrar.GetPageInfo(vmName: name)
             let vm = info.createVm()
-            vm.Initialize(parameters: params)
+            let item = PageItem(name, vm)
+            item.Vm.Initialize(parameters: params)
+            item.Vm.OnNavigatedTo(parameters: params)
             
-            let entry = PageEntry(vmName: name)
-            vmStore[entry.id] = vm
-            
-            newEntries.append(entry)
-            
-            // Notify newly pushed vm
-            vm.OnNavigatedTo(parameters: params)
+            newItems.append(item)
         }
         
         // final array assigned once -> SwiftUI animates a single push
-        let oldEntries = entries
-        entries = newEntries
+        let removedItems = Stack
+        Stack = newItems
         try? await Task.sleep(for: .seconds(0.30))
         
-        // Destroy all old VMs
-        for entry in oldEntries
+        // Destroy all removed VMs
+        for removedItem in removedItems
         {
-            if let oldVm = vmStore[entry.id]
-            {
-                oldVm.Destroy()
-                vmStore[entry.id] = nil
-            }
+            removedItem.Vm.Destroy()
         }
     }
 
     // MARK: BUILD VIEW
-    func viewForEntry(_ entry: PageEntry) -> AnyView
+    func GetViewForItem(_ item: PageItem) -> AnyView
     {
-        let info = NavRegistrar.getPageInfo(vmName: entry.vmName)
-        let vm = vmStore[entry.id]!
-        let obs = PageViewModelObservable(vm: vm)
+        let info = NavRegistrar.GetPageInfo(vmName: item.VmName)
+        let obs = ViewModelObservable(vm: item.Vm)
         
         let page = info.createPage()
             .environmentObject(obs)
         
         // Wrap page with overlay
-        let wrapped = PageOverlay(content: page)
+        let wrapped = PageViewOverlay(content: page)
         
         return AnyView(wrapped)
     }

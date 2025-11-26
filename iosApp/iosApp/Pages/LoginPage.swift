@@ -9,8 +9,14 @@ import SwiftUI
 
 struct LoginPage: View {
 
-    @EnvironmentObject var vmObs: PageViewModelObservable
-    private var vm: LoginPageViewModel { vmObs.raw as! LoginPageViewModel }
+    @EnvironmentObject var vmObs: ViewModelObservable
+    private var Vm: LoginPageViewModel
+    {
+        get
+        {
+            vmObs.Vm as! LoginPageViewModel
+        }
+    }
 
     @State private var username = ""
     @State private var password = ""
@@ -26,9 +32,9 @@ struct LoginPage: View {
                 .textFieldStyle(.roundedBorder)
 
 //            Button("Login") {
-//                vm.Login = username
-//                vm.Password = password
-//                vm.SubmitCommand.Execute()
+//                Vm.Login = username
+//                Vm.Password = password
+//                Vm.SubmitCommand.Execute()
 //            }
 //            .frame(maxWidth: .infinity)
 //            .padding()

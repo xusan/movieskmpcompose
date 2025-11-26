@@ -1,7 +1,7 @@
 import SwiftUI
 import SharedAppCore
 
-struct PageOverlay<Content: View>: View {
+struct PageViewOverlay<Content: View>: View {
     let content: Content
     @State private var busy = false
     @State private var snackbar: (String, SeverityType)?

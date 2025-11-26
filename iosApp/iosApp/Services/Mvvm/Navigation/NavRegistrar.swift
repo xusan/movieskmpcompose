@@ -7,7 +7,8 @@ class NavRegistrar {
     static func RegisterPageForNavigation<TVM: PageViewModel, TPage: View>(
         _ createPage: @escaping () -> TPage,
         _ createViewModel: @escaping () -> TVM
-    ) {
+    )
+    {
         let vmName = String(describing: TVM.self)
 
         if navPages.contains(where: { $0.vmName == vmName }) {
@@ -23,7 +24,8 @@ class NavRegistrar {
         )
     }
 
-    static func getPageInfo(vmName: String) -> NavPageInfo {
+    static func GetPageInfo(vmName: String) -> NavPageInfo
+    {
         guard let info = navPages.first(where: { $0.vmName == vmName }) else {
             fatalError("Page not registered for VM: \(vmName)")
         }
