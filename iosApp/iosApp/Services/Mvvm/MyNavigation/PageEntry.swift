@@ -5,12 +5,11 @@ import Foundation
 struct PageEntry: Hashable, Identifiable {
     let id: UUID
     let vmName: String
-    let animated: Bool
     
-    init(vmName: String, animated: Bool) {
+    init(vmName: String)
+    {
         self.id = UUID()
         self.vmName = vmName
-        self.animated = animated
     }
 
     func hash(into hasher: inout Hasher) { hasher.combine(id) }

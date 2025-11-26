@@ -55,12 +55,13 @@ class Bootstrap
 //        NavRegistrar.RegisterPageForNavigation({ MovieDetailPage() }, { MovieDetailPageViewModel(injectedService: services) })
 //        NavRegistrar.RegisterPageForNavigation({ AddEditMoviePage() }, { AddEditMoviePageViewModel(injectedService: services) })
                 
-//        NavRegistrar.RegisterPageForNavigation({ LoginPage() }, { LoginPageViewModel(injectedService: services) })
-//        NavRegistrar.RegisterPageForNavigation({ HomePage() }, { MoviesPageViewModel(injectedService: services) })
-//        NavRegistrar.RegisterPageForNavigation({ DetailsPage() }, { MovieDetailPageViewModel(injectedService: services) })
+        NavRegistrar.RegisterPageForNavigation({ LoginPage() }, { LoginPageViewModel(injectedService: services) })
+        NavRegistrar.RegisterPageForNavigation({ HomePage() }, { MoviesPageViewModel(injectedService: services) })
+        NavRegistrar.RegisterPageForNavigation({ DetailsPage() }, { MovieDetailPageViewModel(injectedService: services) })
+        NavRegistrar.RegisterPageForNavigation({ AddEditPage() }, { AddEditMoviePageViewModel(injectedService: services) })
         
-        iOSNavRegistrar.Register({ FirstViewModel(injectedService: services) }, { vm in FirstPage(vm: vm) })
-        iOSNavRegistrar.Register({ SecondViewModel(injectedService: services) }, { vm in SecondPage(vm: vm) })
+//        iOSNavRegistrar.Register({ FirstViewModel(injectedService: services) }, { vm in FirstPage(vm: vm) })
+//        iOSNavRegistrar.Register({ SecondViewModel(injectedService: services) }, { vm in SecondPage(vm: vm) })
     }
 }
 

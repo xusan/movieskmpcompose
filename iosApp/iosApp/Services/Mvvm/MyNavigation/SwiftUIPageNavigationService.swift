@@ -44,32 +44,33 @@ final class SwiftUIPageNavigationService: NSObject, ObservableObject, IPageNavig
 
         if nav.isPush
         {
-            try await push(vmName: url, params: params, animated: animated)
+            try await OnPushAsync(vmName: url, params: params, animated: animated)
         }
-        else if nav.isPop {
-            try await pop(params: params)
+        else if nav.isPop
+        {
+            try await OnPopAsync(params: params)
         }
         else if nav.isMultiPop
         {
-            try await multiPop(url: url, params: params, animated: animated)
+            try await OnMultiPopAsync(url: url, params: params, animated: animated)
         }
         else if nav.isMultiPopAndPush
         {
-            try await multiPopAndPush(url: url, params: params, animated: animated)
+            try await OnMultiPopAndPush(url: url, params: params, animated: animated)
         }
         else if nav.isPushAsRoot
         {
-            try await pushRoot(url: url, params: params, animated: animated)
+            try await OnPushRootAsync(url: url, params: params, animated: animated)
         }
         else if nav.isMultiPushAsRoot
         {
-            try await multiPushRoot(url: url, params: params, animated: animated)
+            try await OnMultiPushRootAsync(url: url, params: params, animated: animated)
         }
     }
 
     // MARK: PUSH
 
-    private func push(vmName: String, params: INavigationParameters, animated: Bool) async throws
+    private func OnPushAsync(vmName: String, params: INavigationParameters, animated: Bool) async throws
     {
         let info = NavRegistrar.getPageInfo(vmName: vmName)
 
@@ -83,52 +84,35 @@ final class SwiftUIPageNavigationService: NSObject, ObservableObject, IPageNavig
         vm.Initialize(parameters: params)
         vm.OnNavigatedTo(parameters: params)
         
-        let entry = PageEntry(vmName: vmName, animated: animated)
+        let entry = PageEntry(vmName: vmName)
         vmStore[entry.id] = vm
 
-        if animated
-        {
-            withAnimation(.easeInOut) { entries.append(entry) }
-            
-            try await Task.sleep(for: .seconds(0.3))
-        }
-        else
-        {
-            entries.append(entry)
-        }
+        entries.append(entry)
+        try await Task.sleep(for: .seconds(0.3))
         
         vm.OnAppeared()
     }
 
     // MARK: POP
 
-    private func pop(params: INavigationParameters) async throws
+    private func OnPopAsync(params: INavigationParameters) async throws
     {
         guard let oldEntry = entries.last else { return }
         guard entries.count >= 2 else { return }
         let newEntry = entries[entries.count - 2]
-       
-        let animated = oldEntry.animated
+               
         let oldVm = vmStore[oldEntry.id]
         oldVm?.OnNavigatedFrom(parameters: NavigationParameters())
         vmStore[oldEntry.id] = nil
        
-        if let vm = vmStore[newEntry.id] {
+        if let vm = vmStore[newEntry.id]
+        {
             vm.OnNavigatedTo(parameters: params)
         }
 
-        if animated
-        {
-            _ = withAnimation(.easeInOut)
-                {
-                    entries.removeLast()
-                }
-            try await Task.sleep(for: .seconds(0.3))   // 0.3 seconds
-        }
-        else
-        {
-            entries.removeLast()
-        }
+        entries.removeLast()
+        
+        try await Task.sleep(for: .seconds(0.3))
 
         oldVm?.Destroy()
     }
@@ -139,10 +123,15 @@ final class SwiftUIPageNavigationService: NSObject, ObservableObject, IPageNavig
 
         if(entries.count == 2)
         {
-            try await pop(params: params)
+            try await OnPopAsync(params: params)
         }
         else
         {
+            // OnNavigatedFrom only for the current top (before changes)
+            if let oldTop = entries.last, let oldVm = vmStore[oldTop.id]
+            {
+                oldVm.OnNavigatedFrom(parameters: NavigationParameters())
+            }
             let root = entries.first!
             if let vm = vmStore[root.id]
             {
@@ -152,10 +141,7 @@ final class SwiftUIPageNavigationService: NSObject, ObservableObject, IPageNavig
             
             let entriesToRemove = entries.dropFirst()
             
-            withAnimation(.easeInOut)
-            {
-                entries = [root]
-            }
+            entries = [root]
             
             try await Task.sleep(for: .seconds(0.3))   // 0.3 seconds
             
@@ -169,128 +155,180 @@ final class SwiftUIPageNavigationService: NSObject, ObservableObject, IPageNavig
 
     // MARK: Multi-pop/push
 
-    private func multiPop(url: String, params: INavigationParameters, animated: Bool) async throws
+    private func OnMultiPopAsync(url: String, params: INavigationParameters, animated: Bool) async throws
     {
-        // Count how many "../" segments we have
-            let count = url.split(separator: "/").count - 1
-            guard count > 0 else { return }
-            guard entries.count > count else { return }
-
-            // Example:
-            // entries = [A, B, C, D, E]
-            // count = 3
-            // We want to remove C,D silently, then pop E with animation.
-
-            // 1️⃣ Find the new target top index
-            let targetIndex = entries.count - 1 - count   // this will be index of "B"
-
-            // 2️⃣ Remove middle pages silently (no animation, no pop())
-            //
-            // Remove entries from (targetIndex+1) up to (last-1)
-            // Keep only the last page (E) to pop with animation
-            if count > 1 {
-                let removeStart = targetIndex + 1               // C
-                let removeEnd = entries.count - 1               // up to E (but we'll keep E)
-
-                let toRemove = entries[removeStart..<removeEnd]
-
-                // Destroy VMs for C, D
-                for entry in toRemove {
-                    vmStore[entry.id]?.Destroy()
-                    vmStore[entry.id] = nil
-                }
-
-                // Keep only A, B, and E
-                entries = Array(entries[0...targetIndex] + [entries.last!])
-            }
-
-            // 3️⃣ Now pop only the actual top (E) with animation
-            try await pop(params: params)
-    }
-
-    private func multiPopAndPush(url: String, params: INavigationParameters, animated: Bool) async throws
-    {
-        // 1️⃣ Determine number of ../ segments
-        let popCount = url.split(separator: "/").count - 1
+        let popCount = url.split(separator: "/").count
         guard popCount > 0 else { return }
-        guard popCount < entries.count else { return } // prevent removing root
+        guard popCount < entries.count else { return } // keep root
         
-        // 2️⃣ Extract new ViewModel name: "../../E" → "E"
-        let newVmName = url.replacingOccurrences(of: "../", with: "")
+        // Determine final count to keep
+        let newCount = entries.count - popCount
+        // entries to remove
+        let removedEntries = entries[newCount...]
         
-        // 3️⃣ First PUSH new page (animated)
-        try await push(vmName: newVmName, params: params, animated: animated)
+        // OnNavigatedFrom only for the current top (before changes)
+        if let oldTop = entries.last, let oldVm = vmStore[oldTop.id]
+        {
+            oldVm.OnNavigatedFrom(parameters: NavigationParameters())
+        }
         
-        // 4️⃣ Now silently remove intermediate pages (C, D)
-        // Example: entries = [A, B, C, D, E]
-        // popCount = 2
-        // remove range = (lastIndex - popCount) ..< lastIndex
-        let lastIndex = entries.count - 1
-        let startRemove = lastIndex - popCount
-        let endRemove = lastIndex        // exclude new E
+        // Assign final array once: SwiftUI performs single pop animation
+        entries = Array(entries.prefix(newCount))
         
-        let toRemove = entries[startRemove..<endRemove]
+        try? await Task.sleep(for: .seconds(0.30))
         
-        // Keep A, B and E
-        let newTop = entries[lastIndex]
-        entries = Array(entries.prefix(startRemove) + [newTop])
-        
-        // Destroy removed VMs
-        for entry in toRemove {
-            vmStore[entry.id]?.Destroy()
-            vmStore[entry.id] = nil
+        // Destroy all removed VMs
+        for entry in removedEntries
+        {
+            if let vm = vmStore[entry.id]
+            {
+                vm.Destroy()
+                vmStore[entry.id] = nil
+            }
         }
     }
 
-    private func pushRoot(url: String, params: INavigationParameters, animated: Bool) async throws
+    private func OnMultiPopAndPush(url: String, params: INavigationParameters, animated: Bool) async throws
+    {
+        let popCount = url.split(separator: "/").count - 1
+        guard popCount > 0 else { return }
+        guard popCount < entries.count else { return }
+        
+        // new VM name is the url with ../ removed
+        let newVmName = url.replacingOccurrences(of: "../", with: "")
+        
+        // create new vm & entry inline
+        let info = NavRegistrar.getPageInfo(vmName: newVmName)
+        let vm = info.createVm()
+        vm.Initialize(parameters: params)
+        
+        let newEntry = PageEntry(vmName: newVmName)
+        vmStore[newEntry.id] = vm
+        
+        // OnNavigatedFrom only for previous top
+        if let oldTop = entries.last, let oldVm = vmStore[oldTop.id]
+        {
+            oldVm.OnNavigatedFrom(parameters: NavigationParameters())
+        }
+        vm.OnNavigatedTo(parameters: params)
+        
+        // compute new stack keeping prefix and adding newEntry
+        let newCount = entries.count - popCount
+        let removedEntries = entries[newCount...]
+        
+        // final array assigned once -> SwiftUI animates a single push
+        entries = Array(entries.prefix(newCount)) + [newEntry]
+        try? await Task.sleep(for: .seconds(0.30))
+        
+        // Destroy removed VMs
+        for entry in removedEntries
+        {
+            if let vm = vmStore[entry.id]
+            {
+                vm.Destroy()
+                vmStore[entry.id] = nil
+            }
+        }
+    }
+
+    private func OnPushRootAsync(url: String, params: INavigationParameters, animated: Bool) async throws
     {
         let vmName = url
             .replacingOccurrences(of: "/", with: "")
         
-        // 1️⃣ Push new page first → this animates
-        try await push(vmName: vmName, params: params, animated: animated)
+        var newRoot: PageEntry
+        let oldEntries = entries
         
-        // 2️⃣ Wait for push animation to complete
-        if animated {
-            try? await Task.sleep(for: .seconds(0.3))
+        //if has existing pages
+        if entries.count > 0
+        {
+            //Push new page first → this animates
+            try await OnPushAsync(vmName: vmName, params: params, animated: animated)
+            
+            //get this new pushed page, it will be new root
+            newRoot = entries.last!
+        }
+        else
+        {
+            //if there is no other pages then just create this root and it will be pushed without animation below
+            let info = NavRegistrar.getPageInfo(vmName: vmName)
+            let vm = info.createVm()
+            vm.Initialize(parameters: params)
+            vm.OnNavigatedTo(parameters: params)
+            vm.OnAppeared()
+            
+            newRoot = PageEntry(vmName: vmName)
+            vmStore[newRoot.id] = vm
         }
         
-        // 3️⃣ Remove all old pages silently (no animation)
-        let newRoot = entries.last!
-        let oldEntries = entries.dropLast()
-        
-        let ids = Set(oldEntries.map { $0.id })
-        
-        // Destroy old VMs
-        for id in ids {
-            vmStore[id]?.Destroy()
-            vmStore[id] = nil
-        }
-        
-        // Keep only the new page
+        // Keep only the new page,
+        //we disable animation as array is reducing and it will cause pop animation
         var transaction = Transaction()
         transaction.disablesAnimations = true
-        
-        withTransaction(transaction) {
+        withTransaction(transaction)
+        {
             entries = [newRoot]
+        }
+       
+        // Destroy removed VMs
+        for entry in oldEntries
+        {
+            if let vm = vmStore[entry.id]
+            {
+                vm.Destroy()
+                vmStore[entry.id] = nil
+            }
         }
     }
 
     //I think this one is not used, I can't imagine a situation where we would need it.
-    private func multiPushRoot(url: String, params: INavigationParameters, animated: Bool) async throws {
-//        for e in entries {
-//            vmStore[e.id]?.Destroy()
-//        }
-//        entries = []
-//        vmStore = [:]
-//
-//        let names = url
-//            .split(separator: "/")
-//            .map(String.init)
-//
-//        for n in names {
-//            try await push(vmName: n, params: params, animated: animated)
-//        }
+    private func OnMultiPushRootAsync(url: String, params: INavigationParameters, animated: Bool) async throws
+    {
+        let names = url
+            .split(separator: "/")
+            .map(String.init)
+            .filter { !$0.isEmpty }
+        
+        guard !names.isEmpty else { return }
+        
+        // OnNavigatedFrom for previous item in this push sequence (if any)
+        if let prev = entries.last, let prevVm = vmStore[prev.id]
+        {
+            prevVm.OnNavigatedFrom(parameters: NavigationParameters())
+        }
+        
+        var newEntries: [PageEntry] = []
+        
+        // Push sequence into local array (so we don't touch the global entries until final)
+        for name in names
+        {
+            let info = NavRegistrar.getPageInfo(vmName: name)
+            let vm = info.createVm()
+            vm.Initialize(parameters: params)
+            
+            let entry = PageEntry(vmName: name)
+            vmStore[entry.id] = vm
+            
+            newEntries.append(entry)
+            
+            // Notify newly pushed vm
+            vm.OnNavigatedTo(parameters: params)
+        }
+        
+        // final array assigned once -> SwiftUI animates a single push
+        let oldEntries = entries
+        entries = newEntries
+        try? await Task.sleep(for: .seconds(0.30))
+        
+        // Destroy all old VMs
+        for entry in oldEntries
+        {
+            if let oldVm = vmStore[entry.id]
+            {
+                oldVm.Destroy()
+                vmStore[entry.id] = nil
+            }
+        }
     }
 
     // MARK: BUILD VIEW

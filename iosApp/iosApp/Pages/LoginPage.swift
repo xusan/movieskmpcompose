@@ -25,16 +25,53 @@ struct LoginPage: View {
             SecureField("Password", text: $password)
                 .textFieldStyle(.roundedBorder)
 
-            Button("Login") {
-                vm.Login = username
-                vm.Password = password
-                vm.SubmitCommand.Execute()
+//            Button("Login") {
+//                vm.Login = username
+//                vm.Password = password
+//                vm.SubmitCommand.Execute()
+//            }
+//            .frame(maxWidth: .infinity)
+//            .padding()
+//            .background(.blue)
+//            .foregroundColor(.white)
+//            .cornerRadius(12)
+            
+            Button("Main as Root") {
+                Task {
+                    try await SwiftUIPageNavigationService.shared.Navigate(
+                        name: "/MoviesPageViewModel",
+                        parameters: NavigationParameters(),
+                        useModalNavigation: false,
+                        animated: true,
+                        wrapIntoNav: false
+                    )
+                }
             }
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(.blue)
-            .foregroundColor(.white)
-            .cornerRadius(12)
+            
+            Button("Main") {
+                Task {
+                    try await SwiftUIPageNavigationService.shared.Navigate(
+                        name: "MoviesPageViewModel",
+                        parameters: NavigationParameters(),
+                        useModalNavigation: false,
+                        animated: true,
+                        wrapIntoNav: false
+                    )
+                }
+            }
+            
+            Button("multi Push root DetailsPage/AddEditPage")
+            {
+                Task
+                {
+                    try await SwiftUIPageNavigationService.shared.Navigate(
+                        name: "/MovieDetailPageViewModel/AddEditMoviePageViewModel",
+                        parameters: NavigationParameters(),
+                        useModalNavigation: false,
+                        animated: true,
+                        wrapIntoNav: false)
+                }
+            }
 
             Spacer()
         }
