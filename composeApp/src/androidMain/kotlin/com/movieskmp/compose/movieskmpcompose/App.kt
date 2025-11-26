@@ -19,23 +19,23 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import movieskmpcompose.composeapp.generated.resources.Res
 import movieskmpcompose.composeapp.generated.resources.compose_multiplatform
 
-@Composable @Preview fun App()
+@Composable
+@Preview
+fun App()
 {
     MaterialTheme {
         var showContent by remember { mutableStateOf(false) }
-        Column(
-            modifier = Modifier.background(MaterialTheme.colorScheme.primaryContainer).safeContentPadding().fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Button(onClick = { showContent = !showContent }) {
+        Column(modifier = Modifier.background(MaterialTheme.colorScheme.primaryContainer).safeContentPadding().fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally,)
+        {
+            Button(onClick = { showContent = !showContent })
+            {
                 Text("Click me!")
             }
-            AnimatedVisibility(showContent) {
+            AnimatedVisibility(showContent)
+            {
                 val greeting = remember { "Hello Android Compose" }
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
+                Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally,)
+                {
                     Image(painterResource(Res.drawable.compose_multiplatform), null)
                     Text("Compose: $greeting")
                 }

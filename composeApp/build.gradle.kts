@@ -20,6 +20,7 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation("androidx.navigation:navigation-compose:2.8.0")
             implementation("io.insert-koin:koin-core:3.5.6")
             implementation("com.github.bumptech.glide:glide:4.16.0")
         }
@@ -108,5 +109,14 @@ sentry {
     else
     {
         println("⚠️ SENTRY_AUTH_TOKEN is not set — skipping Sentry upload configuration.")
+    }
+}
+
+
+// Fix for task ordering issue between Sentry plugin and Compose resource generator
+tasks.configureEach {
+    if (name.startsWith("generateSentryBundleId")) {
+        dependsOn("generateResourceAccessorsForAndroidMain")
+        dependsOn("generateActualResourceCollectorsForAndroidMain")
     }
 }
