@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct DetailsPage: View {
-    @EnvironmentObject var adapter: PageViewModelObservable
-    var vm: MovieDetailPageViewModel { adapter.raw as! MovieDetailPageViewModel }
+    @EnvironmentObject var adapter: ViewModelObservable
+    var vm: MovieDetailPageViewModel { adapter.Vm as! MovieDetailPageViewModel }
 
     var body: some View {
         VStack(spacing: 20) {

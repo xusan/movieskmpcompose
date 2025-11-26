@@ -2,21 +2,22 @@ import SharedAppCore
 
 class Bootstrap
 {    
-    func NavigateToPage(_ navigationService: IPageNavigationService) async
+    func NavigateToPage(_ navigationService: IPageNavigationService)
     {
+        let nav = navigationService as! SwiftUIPageNavigationService
         let preferences = try! KoinResolver().GetPreferences()
         let isLoggedIn = preferences.Get(LoginPageViewModel.companion.IsLoggedIn, default: false)
 
-//        if isLoggedIn
-//        {
-//            let mainPage = String(describing: MoviesPageViewModel.self)
-//            try! await navigationService.Navigate(name: "/\(mainPage)", parameters: nil, useModalNavigation: false, animated: false, wrapIntoNav: false)
-//        }
-//        else
-//        {
+        if isLoggedIn
+        {
+            let mainPage = String(describing: MoviesPageViewModel.self)
+            nav.OnNavigateFirstTime(mainPage, NavigationParameters())
+        }
+        else
+        {
             let loginPage = String(describing: LoginPageViewModel.self)
-            try! await navigationService.Navigate(name: "/\(loginPage)", parameters: nil, useModalNavigation: false, animated: false, wrapIntoNav: false)
-        //}
+            nav.OnNavigateFirstTime(loginPage, NavigationParameters())
+        }
     }
     
    
@@ -59,9 +60,6 @@ class Bootstrap
         NavRegistrar.RegisterPageForNavigation({ HomePage() }, { MoviesPageViewModel(injectedService: services) })
         NavRegistrar.RegisterPageForNavigation({ DetailsPage() }, { MovieDetailPageViewModel(injectedService: services) })
         NavRegistrar.RegisterPageForNavigation({ AddEditPage() }, { AddEditMoviePageViewModel(injectedService: services) })
-        
-//        iOSNavRegistrar.Register({ FirstViewModel(injectedService: services) }, { vm in FirstPage(vm: vm) })
-//        iOSNavRegistrar.Register({ SecondViewModel(injectedService: services) }, { vm in SecondPage(vm: vm) })
     }
 }
 
