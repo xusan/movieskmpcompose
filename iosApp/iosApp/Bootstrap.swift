@@ -4,7 +4,7 @@ class Bootstrap
 {    
     func NavigateToPage(_ navigationService: IPageNavigationService)
     {
-        let nav = navigationService as! SwiftUIPageNavigationService
+        let nav = navigationService as! SuiPageNavigationService
         let preferences = try! KoinResolver().GetPreferences()
         let isLoggedIn = preferences.Get(LoginPageViewModel.companion.IsLoggedIn, default: false)
 

@@ -23,11 +23,6 @@ class iOSSnackbarBarService: ISnackbarService
     func Show(message: String, severityType: SeverityType, duration: Int32)
     {
         PopupShowed.Invoke(value: severityType)
-                
-//        if let page = pageNavigationService.GetCurrentPage() as? iOSLifecyclePage
-//        {
-//            page.snackbarNode.SetText(message, severityType);
-//            page.snackbarNode.Show();
-//        }
+        SnackbarManager.shared.show(message: message, severity: severityType)
     }
 }

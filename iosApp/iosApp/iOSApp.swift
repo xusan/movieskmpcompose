@@ -6,7 +6,7 @@ import SharedAppCore
     init()
     {
         let appErrorTracking = iOSErrorTrackingService()
-        let navigationService = SwiftUIPageNavigationService.shared
+        let navigationService = SuiPageNavigationService.shared
         let bootstrap = Bootstrap()
         bootstrap.RegisterTypes(navigationService, appErrorTracking)
         bootstrap.NavigateToPage(navigationService)
@@ -16,7 +16,7 @@ import SharedAppCore
     {
         WindowGroup
         {
-            RootNavigationHost()           
+            RootView()           
         }
     }
 }
