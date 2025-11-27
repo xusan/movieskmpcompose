@@ -3,13 +3,17 @@ package com.example.movieskmp
 import androidx.activity.ComponentActivity
 import com.app.shared.Base.PageInjectedServices
 import com.app.shared.ViewModels.*
-import com.base.abstractions.Diagnostic.IErrorTrackingService
 import com.base.abstractions.Essentials.IPreferences
 import com.base.abstractions.IConstant
 import com.base.impl.ContainerLocator
 import com.base.impl.Droid.Utils.CurrentActivity
 import com.base.mvvm.Navigation.IPageNavigationService
 import com.base.mvvm.Navigation.NavRegistrar
+import com.movieskmp.compose.movieskmpcompose.Impl.mvvm.ComposeNavRegistrar
+import com.movieskmp.compose.movieskmpcompose.Pages.FirstPage
+import com.movieskmp.compose.movieskmpcompose.Pages.SecondPage
+import com.movieskmp.compose.movieskmpcompose.ViewModels.FirstViewModel
+import com.movieskmp.compose.movieskmpcompose.ViewModels.SecondViewModel
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.context.startKoin
@@ -35,10 +39,8 @@ class Bootstrap : KoinComponent
             single<NavRegistrar> { pageRegistrar }
         }
         //register pages
-//        pageRegistrar.RegisterPageForNavigation<LoginPageViewModel, LoginPage>({ LoginPage()}, { LoginPageViewModel(get())})
-//        pageRegistrar.RegisterPageForNavigation<MoviesPageViewModel, MoviesPage>({ MoviesPage()}, { (MoviesPageViewModel(get()))})
-//        pageRegistrar.RegisterPageForNavigation<MovieDetailPageViewModel, MovieDetailPage>({ MovieDetailPage()}, { (MovieDetailPageViewModel(get()))})
-//        pageRegistrar.RegisterPageForNavigation<AddEditMoviePageViewModel, AddEditMoviePage>({ AddEditMoviePage()}, { (AddEditMoviePageViewModel(get()))})
+        ComposeNavRegistrar.Register({ FirstViewModel(get()) }, {vm-> FirstPage(vm) })
+        ComposeNavRegistrar.Register({ SecondViewModel(get()) }, { vm-> SecondPage(vm) })
 
         val mergedModules = appDroidImpl + appModule + pageRegistrar.modules;
 

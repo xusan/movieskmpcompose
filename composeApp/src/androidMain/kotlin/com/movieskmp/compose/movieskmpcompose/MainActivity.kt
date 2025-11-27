@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import com.base.abstractions.Diagnostic.ILoggingService
 import com.base.impl.ContainerLocator
 import com.example.movieskmp.Bootstrap
+import com.movieskmp.compose.movieskmpcompose.Impl.mvvm.ComposeNavigationService
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity()
@@ -22,20 +23,24 @@ class MainActivity : ComponentActivity()
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
+        val navService = ComposeNavigationService()
+        val bootstrap = Bootstrap(this)
+        bootstrap.RegisterTypes(navService)
+
         setContent {
             App()
         }
 
-        val bootstrap = Bootstrap(this)
+
 
 //        binding.apply {
 //            pageNavigationService = navContainer
 //            bootstrap.RegisterTypes(pageNavigationService)
 //        }
 
-//        this.loggingService = ContainerLocator.Resolve<ILoggingService>()
-//        this.loggingService.Log("####################################################- APPLICATION STARTED -####################################################");
-//        this.loggingService.Log("MainActivity.OnCreate()");
+        this.loggingService = ContainerLocator.Resolve<ILoggingService>()
+        this.loggingService.Log("####################################################- APPLICATION STARTED -####################################################");
+        this.loggingService.Log("MainActivity.OnCreate()");
 
 //        lifecycleScope.launch() {
 //            bootstrap.NavigateToPageAsync(pageNavigationService);
