@@ -26,7 +26,7 @@ fun SecondPage(vm: SecondViewModel) {
     {
         val scope = rememberCoroutineScope()
 
-        Text("2", fontSize = 50.sp)
+        Text("2", fontSize = 92.sp)
         Button(onClick = { btnNavigateToThird_Clicked2(vm, scope) })
         {
             Text("ThirdViewModel")

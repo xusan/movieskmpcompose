@@ -7,7 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.base.abstractions.Diagnostic.ILoggingService
 import com.base.impl.ContainerLocator
-import com.movieskmp.compose.movieskmpcompose.ComposeNavigation.AppNavWithActionBar
+import com.movieskmp.compose.movieskmpcompose.Impl.mvvm.AppNavWithActionBar
 import com.movieskmp.compose.movieskmpcompose.Impl.mvvm.DroidPageNavigationService
 
 class MainActivity : ComponentActivity()

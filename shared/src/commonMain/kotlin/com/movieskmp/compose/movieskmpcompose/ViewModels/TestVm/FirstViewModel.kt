@@ -6,7 +6,11 @@ import com.base.mvvm.Navigation.INavigationParameters
 
 class FirstViewModel(injectedService: PageInjectedServices) : AppPageViewModel(injectedService)
 {
-    var message = "First Page"
+    var Message: String = "First Page"
+        set(value)
+        {
+            SetProperty(::Message.name, field, value) { field = it }
+        }
 
     override fun OnNavigatedTo(parameters: INavigationParameters)
     {
@@ -22,5 +26,11 @@ class FirstViewModel(injectedService: PageInjectedServices) : AppPageViewModel(i
         Navigate("SecondViewModel")
     }
 
+    var index = 1;
+    fun UpdateMessage()
+    {
+        index++
+        Message = "First Page $index"
+    }
 
 }
