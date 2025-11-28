@@ -21,7 +21,8 @@ struct LoginPage: View {
     @State private var username = ""
     @State private var password = ""
 
-    var body: some View {
+    var body: some View
+    {
         VStack(spacing: 20) {
             Text("Login").font(.largeTitle.bold())
 
@@ -44,7 +45,7 @@ struct LoginPage: View {
             
             Button("Main as Root") {
                 Task {
-                    try await SwiftUIPageNavigationService.shared.Navigate(
+                    try await SuiPageNavigationService.shared.Navigate(
                         name: "/MoviesPageViewModel",
                         parameters: NavigationParameters(),
                         useModalNavigation: false,
@@ -56,7 +57,7 @@ struct LoginPage: View {
             
             Button("Main") {
                 Task {
-                    try await SwiftUIPageNavigationService.shared.Navigate(
+                    try await SuiPageNavigationService.shared.Navigate(
                         name: "MoviesPageViewModel",
                         parameters: NavigationParameters(),
                         useModalNavigation: false,
@@ -70,7 +71,7 @@ struct LoginPage: View {
             {
                 Task
                 {
-                    try await SwiftUIPageNavigationService.shared.Navigate(
+                    try await SuiPageNavigationService.shared.Navigate(
                         name: "/MovieDetailPageViewModel/AddEditMoviePageViewModel",
                         parameters: NavigationParameters(),
                         useModalNavigation: false,
@@ -82,6 +83,14 @@ struct LoginPage: View {
             Spacer()
         }
         .padding()
+//        .onAppear
+//        {
+//           print("===============LoginPage appeared================")
+//        }
+//        .onDisappear
+//        {
+//           print("---------------LoginPage disappeared----------------")
+//        }
     }
 }
 
