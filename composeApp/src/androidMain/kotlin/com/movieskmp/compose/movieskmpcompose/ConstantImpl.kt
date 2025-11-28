@@ -1,4 +1,4 @@
-package com.example.movieskmp
+package com.movieskmp.compose.movieskmpcompose
 
 import com.base.abstractions.IConstant
 

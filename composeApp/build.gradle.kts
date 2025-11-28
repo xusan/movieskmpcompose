@@ -21,6 +21,7 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation("androidx.navigation:navigation-compose:2.8.0")
+            implementation("androidx.compose.material:material-icons-extended:1.6.7")
             implementation("io.insert-koin:koin-core:3.5.6")
             implementation("com.github.bumptech.glide:glide:4.16.0")
         }
@@ -90,7 +91,7 @@ dependencies {
 sentry {
     // Auto-Install Sentry dependencies
     autoInstallation {
-        enabled = false
+        enabled = true
     }
 
     //Read from the environment variable

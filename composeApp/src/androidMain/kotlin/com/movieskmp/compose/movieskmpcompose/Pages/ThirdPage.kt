@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import com.app.shared.Base.PageInjectedServices
+import com.base.mvvm.ViewModels.InjectedService
 import com.movieskmp.compose.movieskmpcompose.ViewModels.TestVm.FirstViewModel
 import com.movieskmp.compose.movieskmpcompose.ViewModels.TestVm.SecondViewModel
 import com.movieskmp.compose.movieskmpcompose.ViewModels.TestVm.ThirdViewModel
@@ -21,28 +22,46 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun SecondPage(vm: SecondViewModel) {
-    Column(Modifier.fillMaxSize().background(Color.Yellow), Arrangement.Center, Alignment.CenterHorizontally)
+fun ThirdPage(vm: ThirdViewModel) {
+    Column(Modifier
+        .fillMaxSize()
+        .background(Color.Yellow), Arrangement.Center, Alignment.CenterHorizontally)
     {
         val scope = rememberCoroutineScope()
 
-        Text("2", fontSize = 50.sp)
-        Button(onClick = { btnNavigateToThird_Clicked2(vm, scope) })
+        Text("3", fontSize = 92.sp)
+        Button(onClick = { btnNavigateToRoot_Clicked3(vm, scope) })
         {
-            Text("ThirdViewModel")
+            Text("NavigateToRoot ../../")
         }
-        Button(onClick = { btnPopNavigateThird_Clicked2(vm, scope) })
+        Button(onClick = { btnMakeRoot_Clicked3(vm, scope) })
         {
-            Text("../ThirdViewModel")
+            Text("/SecondViewModel (make root)")
         }
-        Button(onClick = { btnBack_Clicked2(vm, scope) })
+        Button(onClick = { btnBack_Clicked3(vm, scope) })
         {
             Text("Back")
         }
     }
 }
 
-fun btnBack_Clicked2(vm: SecondViewModel, scope: CoroutineScope)
+fun btnNavigateToRoot_Clicked3(vm: ThirdViewModel, scope: CoroutineScope)
+{
+    scope.launch()
+    {
+        vm.NavigateToRoot()
+    }
+}
+
+fun btnMakeRoot_Clicked3(vm: ThirdViewModel, scope: CoroutineScope)
+{
+    scope.launch()
+    {
+        vm.NavigateToSecondRoot()
+    }
+}
+
+fun btnBack_Clicked3(vm: ThirdViewModel, scope: CoroutineScope)
 {
     scope.launch()
     {
@@ -50,25 +69,8 @@ fun btnBack_Clicked2(vm: SecondViewModel, scope: CoroutineScope)
     }
 }
 
-fun btnNavigateToThird_Clicked2(vm: SecondViewModel, scope: CoroutineScope)
-{
-    scope.launch()
-    {
-        vm.NavigateToThird()
-    }
-}
-
-fun btnPopNavigateThird_Clicked2(vm: SecondViewModel, scope: CoroutineScope)
-{
-    scope.launch()
-    {
-        vm.PopAndNavigateToThird()
-    }
-}
-
 @Preview
 @Composable
-fun SecondPage_Preview() {
-    SecondPage(vm = SecondViewModel(PageInjectedServices())) // or fake VM
+fun ThirdPage_Preview() {
+    ThirdPage(vm = ThirdViewModel(PageInjectedServices())) // or fake VM
 }
-

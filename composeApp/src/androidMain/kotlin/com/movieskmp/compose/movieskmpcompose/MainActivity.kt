@@ -5,14 +5,10 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.lifecycleScope
 import com.base.abstractions.Diagnostic.ILoggingService
 import com.base.impl.ContainerLocator
-import com.example.movieskmp.Bootstrap
-import com.movieskmp.compose.movieskmpcompose.Impl.mvvm.ComposeNavigationService
-import kotlinx.coroutines.launch
+import com.movieskmp.compose.movieskmpcompose.ComposeNavigation.AppNavWithActionBar
+import com.movieskmp.compose.movieskmpcompose.Impl.mvvm.DroidPageNavigationService
 
 class MainActivity : ComponentActivity()
 {
@@ -23,28 +19,18 @@ class MainActivity : ComponentActivity()
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        val navService = ComposeNavigationService()
+        val navService = DroidPageNavigationService()
         val bootstrap = Bootstrap(this)
         bootstrap.RegisterTypes(navService)
-
-        setContent {
-            App()
-        }
-
-
-
-//        binding.apply {
-//            pageNavigationService = navContainer
-//            bootstrap.RegisterTypes(pageNavigationService)
-//        }
 
         this.loggingService = ContainerLocator.Resolve<ILoggingService>()
         this.loggingService.Log("####################################################- APPLICATION STARTED -####################################################");
         this.loggingService.Log("MainActivity.OnCreate()");
 
-//        lifecycleScope.launch() {
-//            bootstrap.NavigateToPageAsync(pageNavigationService);
-//        }
+        val rootPage = bootstrap.GetRootPage()
+        setContent {
+            AppNavWithActionBar(navService, rootPage)
+        }
 
         window.setSoftInputMode(
             WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
@@ -52,7 +38,7 @@ class MainActivity : ComponentActivity()
     }
 }
 
-@Preview @Composable fun AppAndroidPreview()
-{
-    App()
-}
+//@Preview @Composable fun AppAndroidPreview()
+//{
+//    App()
+//}
