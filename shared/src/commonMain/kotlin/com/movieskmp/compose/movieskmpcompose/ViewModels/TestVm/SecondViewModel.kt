@@ -1,9 +1,8 @@
-package com.movieskmp.compose.movieskmpcompose.ViewModels
+package com.movieskmp.compose.movieskmpcompose.ViewModels.TestVm
 
 import com.app.shared.Base.AppPageViewModel
 import com.app.shared.Base.PageInjectedServices
 import com.base.mvvm.Navigation.INavigationParameters
-import com.base.mvvm.Navigation.IPageNavigationService
 
 class SecondViewModel(injectedService: PageInjectedServices) : AppPageViewModel(injectedService)
 {
@@ -14,8 +13,13 @@ class SecondViewModel(injectedService: PageInjectedServices) : AppPageViewModel(
         println("SecondViewModel")
     }
 
-    suspend fun navigateBack()
+    suspend fun NavigateToThird()
     {
-        NavigateBack()
+        Navigate("${ThirdViewModel::class.simpleName}")
+    }
+
+    suspend fun PopAndNavigateToThird()
+    {
+        Navigate("../${ThirdViewModel::class.simpleName}")
     }
 }

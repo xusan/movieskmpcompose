@@ -14,18 +14,41 @@ fun <VM : PageViewModel> BasePage(viewModel: VM,content: @Composable () -> Unit)
 {
     val lifecycleOwner = LocalLifecycleOwner.current
     val currentVm by rememberUpdatedState(viewModel)
+    val eventBus = LocalEventBus.current
 
+    println("BasePage eventBus instance: $eventBus")
+    println("BasePage eventBus.hash: ${eventBus.hashCode()}")
     DisposableEffect(lifecycleOwner)
     {
+        val ViewModel_OnPropertyChanged = { prop: String ->
+
+            val result = eventBus.events.tryEmit(PropertyChangedEvent(prop))
+            print("eventBus.events.tryEmit() result = $result")
+        }
+
         val observer = LifecycleEventObserver()
         { _, event ->
 
-            when (event) {
-                Lifecycle.Event.ON_START -> currentVm.OnAppeared()
-                Lifecycle.Event.ON_STOP  -> currentVm.OnDisappearing()
-                else -> Unit
+            if (event == Lifecycle.Event.ON_CREATE)
+            {
+                viewModel.PropertyChanged += ViewModel_OnPropertyChanged
+            }
+            else if (event == Lifecycle.Event.ON_DESTROY)
+            {
+                viewModel.PropertyChanged -= ViewModel_OnPropertyChanged
+            }
+            else if (event == Lifecycle.Event.ON_START)
+            {
+                currentVm.OnAppearing()
+
+            }
+            else if (event == Lifecycle.Event.ON_STOP)
+            {
+                currentVm.OnDisappearing()
             }
         }
+
+
 
         lifecycleOwner.lifecycle.addObserver(observer)
 
@@ -36,3 +59,8 @@ fun <VM : PageViewModel> BasePage(viewModel: VM,content: @Composable () -> Unit)
 
     content()
 }
+
+
+
+data class PropertyChangedEvent(val propertyName: String)
+
