@@ -1,13 +1,13 @@
 import SwiftUI
 
-final class SuiPageNavigationService: NSObject, ObservableObject, IPageNavigationService {
+final class Sui_PageNavigationService: NSObject, ObservableObject, IPageNavigationService
+{
+    private override init() {}
     
-    static let shared = SuiPageNavigationService()
-
     @Published var Stack: [PageItem] = []
 
-    private override init() {}
-
+    //MARK: - IPageNavigationService implementation
+    
     var CanNavigateBack: Bool { Stack.count > 1 }
 
     func GetCurrentPage() -> (any IPage)? { nil }
@@ -87,7 +87,7 @@ final class SuiPageNavigationService: NSObject, ObservableObject, IPageNavigatio
         }
     }
 
-    // MARK: PUSH
+    //MARK: - Helper methods
 
     private func OnPushAsync(vmName: String, params: INavigationParameters, animated: Bool) async throws
     {
@@ -329,4 +329,6 @@ final class SuiPageNavigationService: NSObject, ObservableObject, IPageNavigatio
 //        let rootPage = PageRoot(content: page, pageName: pName)
 //        return AnyView(rootPage)
     }
+    
+    static let shared = Sui_PageNavigationService()
 }

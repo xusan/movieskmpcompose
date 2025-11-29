@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct EditTextField: View
+struct Sui_EditTextField: View
 {
     @Binding var text: String
     var placeholder: String

@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct PageHeaderView: View
+struct Sui_PageHeaderView: View
 {
     let title: String
     let leftIcon: String?
@@ -20,7 +20,7 @@ struct PageHeaderView: View
             // LEFT area
             if let leftIcon = leftIcon
             {
-                SvgCircleButton(svgFileName: leftIcon, action: onLeftTap ?? { print("Page header left button tapped") })
+                Sui_SvgCircleButton(svgFileName: leftIcon, action: onLeftTap ?? { print("Page header left button tapped") })
             }
             else
             {
@@ -41,7 +41,7 @@ struct PageHeaderView: View
             // RIGHT area
             if let rightIcon = rightIcon
             {
-                SvgCircleButton(svgFileName: rightIcon, action: onRightTap ?? { print("Page header right button tapped") })
+                Sui_SvgCircleButton(svgFileName: rightIcon, action: onRightTap ?? { print("Page header right button tapped") })
             }
             else
             {

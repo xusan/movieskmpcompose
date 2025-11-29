@@ -6,7 +6,7 @@ import SharedAppCore
     init()
     {
         let appErrorTracking = iOSErrorTrackingService()
-        let navigationService = SuiPageNavigationService.shared
+        let navigationService = Sui_PageNavigationService.shared
         let bootstrap = Bootstrap()
         bootstrap.RegisterTypes(navigationService, appErrorTracking)
         bootstrap.NavigateToPage(navigationService)

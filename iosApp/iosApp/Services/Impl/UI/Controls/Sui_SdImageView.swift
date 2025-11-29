@@ -1,7 +1,7 @@
 import SwiftUI
 import SDWebImageSwiftUI
 
-struct SdImageView: View
+struct Sui_SdImageView: View
 {
     var urlString: String?
     var filePath: String?

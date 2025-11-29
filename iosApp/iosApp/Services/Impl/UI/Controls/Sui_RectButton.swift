@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct RectButton<Content: View>: View {
+struct Sui_RectButton<Content: View>: View {
     let normalColor: Color
     let pressedColor: Color
     let onTouchDown: () -> Void

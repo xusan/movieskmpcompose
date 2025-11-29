@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct MultilineTextField: View
+struct Sui_MultilineTextField: View
 {
     @Binding var text: String
     

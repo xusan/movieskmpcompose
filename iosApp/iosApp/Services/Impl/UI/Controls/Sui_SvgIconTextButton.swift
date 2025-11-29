@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct SvgIconTextButton: View
+struct Sui_SvgIconTextButton: View
 {
     let normalColor: Color
     let pressedColor: Color
@@ -24,7 +24,7 @@ struct SvgIconTextButton: View
 
     var body: some View
     {
-        RectButton(
+        Sui_RectButton(
             normalColor: normalColor,
             pressedColor: pressedColor,
             onTouchDown: onTouchDown,
@@ -66,7 +66,7 @@ struct SvgIconTextButton: View
 
     private var iconView: some View
     {
-        SvgImageView(svgFileName: icon)
+        Sui_SvgImageView(svgFileName: icon)
             .frame(width: iconSize, height: iconSize)
     }
 

@@ -17,7 +17,7 @@ struct HomePage: View
             Text("Home").font(.largeTitle)
             Button("Details") {
                 Task {
-                    try await SuiPageNavigationService.shared.Navigate(
+                    try await Sui_PageNavigationService.shared.Navigate(
                         name: "MovieDetailPageViewModel",
                         parameters: NavigationParameters(),
                         useModalNavigation: false,
@@ -28,7 +28,7 @@ struct HomePage: View
             }
             Button("Push Login as Root") {
                 Task {
-                    try await SuiPageNavigationService.shared.Navigate(
+                    try await Sui_PageNavigationService.shared.Navigate(
                         name: "/LoginPageViewModel",
                         parameters: NavigationParameters(),
                         useModalNavigation: false,

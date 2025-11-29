@@ -30,7 +30,7 @@ struct DetailsPage: View {
             {
                 Task
                 {
-                    try await SuiPageNavigationService.shared.Navigate(
+                    try await Sui_PageNavigationService.shared.Navigate(
                         name: "/LoginPageViewModel",
                         parameters: NavigationParameters(),
                         useModalNavigation: false,
@@ -44,7 +44,7 @@ struct DetailsPage: View {
             {
                 Task
                 {
-                    try await SuiPageNavigationService.shared.NavigateToRoot(parameters: NavigationParameters())
+                    try await Sui_PageNavigationService.shared.NavigateToRoot(parameters: NavigationParameters())
                 }
             }
             
@@ -52,7 +52,7 @@ struct DetailsPage: View {
             {
                 Task
                 {
-                    try await SuiPageNavigationService.shared.Navigate(
+                    try await Sui_PageNavigationService.shared.Navigate(
                         name: "../../",
                         parameters: NavigationParameters(),
                         useModalNavigation: false,
@@ -66,7 +66,7 @@ struct DetailsPage: View {
             {
                 Task
                 {
-                    try await SuiPageNavigationService.shared.Navigate(
+                    try await Sui_PageNavigationService.shared.Navigate(
                         name: "../../AddEditMoviePageViewModel",
                         parameters: NavigationParameters(),
                         useModalNavigation: false,

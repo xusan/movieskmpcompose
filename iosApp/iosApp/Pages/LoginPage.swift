@@ -25,18 +25,18 @@ struct LoginPage: View {
     {
         VStack(spacing: 16)
         {
-            EditTextField(
+            Sui_EditTextField(
                 text: $username,
                 placeholder: "Login"
             )
             
-            EditTextField(
+            Sui_EditTextField(
                 text: $password,
                 placeholder: "Password",
                 isPassword: true
             )
             
-            PrimaryButton(text: "Submit")
+            Sui_PrimaryButton(text: "Submit")
             {
                 Vm.Login = username
                 Vm.Password = password
@@ -46,8 +46,7 @@ struct LoginPage: View {
         .padding(.horizontal, 20)
         .frame(maxWidth: .infinity,
                maxHeight: .infinity,
-               alignment: .center)
-        .background(Color(ColorConstants.BgColor.ToUIColor()))   
+               alignment: .center)        
     }
 }
 

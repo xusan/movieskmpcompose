@@ -4,7 +4,7 @@ class Bootstrap
 {    
     func NavigateToPage(_ navigationService: IPageNavigationService)
     {
-        let nav = navigationService as! SuiPageNavigationService
+        let nav = navigationService as! Sui_PageNavigationService
         let preferences = try! KoinResolver().GetPreferences()
         let isLoggedIn = preferences.Get(LoginPageViewModel.companion.IsLoggedIn, default: false)
 
@@ -41,8 +41,8 @@ class Bootstrap
             emailServiceFactory: nil,
             shareFactory: { iOSShareImplementation() },
             zipServiceFactory: { iOSZipService() },
-            snackbarFactory: { SuiSnackbarBarService() },
-            alertDialogFactory: { SuiAlertDialogService() },
+            snackbarFactory: { Sui_SnackbarBarService() },
+            alertDialogFactory: { Sui_AlertDialogService() },
             mediaPickerFactory: { iOSMediaPickerService() },
             outputFactory: { iOSConsoleOutput() },
             fileLoggerFactory: { iOSFileLogger() },

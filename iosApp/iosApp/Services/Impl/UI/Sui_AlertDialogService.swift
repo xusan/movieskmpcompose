@@ -2,11 +2,11 @@ import SharedAppCore
 import SwiftUI
 
 @MainActor
-final class SuiAlertDialogService: IAlertDialogService
+final class Sui_AlertDialogService: IAlertDialogService
 {
     @Published var activeRequest: AlertRequest?
     
-    static let shared = SuiAlertDialogService()
+    static let shared = Sui_AlertDialogService()
     
     // MARK: - API
     
@@ -92,7 +92,7 @@ extension View
 {
     func alertIfNeeded() -> some View
     {
-        let service = SuiAlertDialogService.shared
+        let service = Sui_AlertDialogService.shared
         return self.alert(service.alertTitle ?? "", isPresented: service.alertBinding) {
             if let accept = service.acceptTitle
             {
@@ -114,7 +114,7 @@ extension View
     
     func confirmationDialogIfNeeded() -> some View
     {
-        let service = SuiAlertDialogService.shared
+        let service = Sui_AlertDialogService.shared
         
         return self.confirmationDialog(
             service.sheetTitle ?? "",
@@ -140,7 +140,7 @@ extension View
     }
 }
 
-extension SuiAlertDialogService
+extension Sui_AlertDialogService
 {
     // MARK: - Alert
     var alertTitle: String?
