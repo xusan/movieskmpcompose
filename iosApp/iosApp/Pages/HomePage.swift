@@ -7,9 +7,10 @@
 
 import SwiftUI
 
-struct HomePage: View {
-    @EnvironmentObject var adapter: ViewModelObservable
-    var vm: MoviesPageViewModel { adapter.Vm as! MoviesPageViewModel }
+struct HomePage: View
+{
+    @EnvironmentObject var vmObs: ViewModelObservable
+    var Vm: MoviesPageViewModel { vmObs.Vm as! MoviesPageViewModel }
 
     var body: some View {
         VStack(spacing: 20) {
@@ -36,6 +37,14 @@ struct HomePage: View {
                     )
                 }
             }
+        }
+        .onReceive(vmObs.eventBroadcaster) { args in
+            
+            let currentVmName = String(describing: type(of: Vm))
+            if(currentVmName == args.vmName)
+            {
+                print("Received event with args vmName = \(args.vmName); propName = \(args.propertyName)")
+            }            
         }
     }
 }

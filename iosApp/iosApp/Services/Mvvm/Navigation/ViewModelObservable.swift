@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 import SwiftUI
 
 /// Observable wrapper around a KMP PageViewModel.
@@ -7,6 +8,7 @@ final class ViewModelObservable : ObservableObject
 {
     @objc var Vm: PageViewModel?
     var loggingService: ILoggingService? = nil
+    let eventBroadcaster = PassthroughSubject<PropertyChangedPayload, Never>()
     
     init(vm: PageViewModel)
     {
@@ -37,5 +39,20 @@ final class ViewModelObservable : ObservableObject
         {
             BusyIndicatorManager.shared.show(nil)
         }
+        
+        let payload = PropertyChangedPayload(String(describing: type(of: Vm!)), propertyName)
+        eventBroadcaster.send(payload)
+    }
+}
+
+class PropertyChangedPayload
+{
+    let vmName: String
+    let propertyName: String
+    
+    init(_ vmName: String, _ propertyName: String)
+    {
+        self.vmName = vmName
+        self.propertyName = propertyName
     }
 }

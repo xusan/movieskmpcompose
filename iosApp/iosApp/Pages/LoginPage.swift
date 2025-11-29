@@ -8,7 +8,7 @@ import SwiftUI
 
 
 struct LoginPage: View {
-
+    
     @EnvironmentObject var vmObs: ViewModelObservable
     private var Vm: LoginPageViewModel
     {
@@ -17,80 +17,37 @@ struct LoginPage: View {
             vmObs.Vm as! LoginPageViewModel
         }
     }
-
+    
     @State private var username = ""
     @State private var password = ""
-
+    
     var body: some View
     {
-        VStack(spacing: 20) {
-            Text("Login").font(.largeTitle.bold())
-
-            TextField("Username", text: $username)
-                .textFieldStyle(.roundedBorder)
-
-            SecureField("Password", text: $password)
-                .textFieldStyle(.roundedBorder)
-
-//            Button("Login") {
-//                Vm.Login = username
-//                Vm.Password = password
-//                Vm.SubmitCommand.Execute()
-//            }
-//            .frame(maxWidth: .infinity)
-//            .padding()
-//            .background(.blue)
-//            .foregroundColor(.white)
-//            .cornerRadius(12)
+        VStack(spacing: 16)
+        {
+            EditTextField(
+                text: $username,
+                placeholder: "Login"
+            )
             
-            Button("Main as Root") {
-                Task {
-                    try await SuiPageNavigationService.shared.Navigate(
-                        name: "/MoviesPageViewModel",
-                        parameters: NavigationParameters(),
-                        useModalNavigation: false,
-                        animated: true,
-                        wrapIntoNav: false
-                    )
-                }
-            }
+            EditTextField(
+                text: $password,
+                placeholder: "Password",
+                isPassword: true
+            )
             
-            Button("Main") {
-                Task {
-                    try await SuiPageNavigationService.shared.Navigate(
-                        name: "MoviesPageViewModel",
-                        parameters: NavigationParameters(),
-                        useModalNavigation: false,
-                        animated: true,
-                        wrapIntoNav: false
-                    )
-                }
-            }
-            
-            Button("multi Push root DetailsPage/AddEditPage")
+            PrimaryButton(text: "Submit")
             {
-                Task
-                {
-                    try await SuiPageNavigationService.shared.Navigate(
-                        name: "/MovieDetailPageViewModel/AddEditMoviePageViewModel",
-                        parameters: NavigationParameters(),
-                        useModalNavigation: false,
-                        animated: true,
-                        wrapIntoNav: false)
-                }
+                Vm.Login = username
+                Vm.Password = password
+                Vm.SubmitCommand.Execute()
             }
-
-            Spacer()
         }
-        .padding()
-//        .onAppear
-//        {
-//           print("===============LoginPage appeared================")
-//        }
-//        .onDisappear
-//        {
-//           print("---------------LoginPage disappeared----------------")
-//        }
+        .padding(.horizontal, 20)
+        .frame(maxWidth: .infinity,
+               maxHeight: .infinity,
+               alignment: .center)
+        .background(Color(ColorConstants.BgColor.ToUIColor()))   
     }
 }
 

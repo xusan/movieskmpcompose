@@ -24,9 +24,12 @@ struct RootView: View
                             .navigationBarBackButtonHidden(isRoot) //hide navigation bar for root page, as our root is still second page and iOS will show back button for it
                     }
             }
+            .hideKeyboardOnTap() //hide keyboard when tap anywhere on page
+            .alertIfNeeded() //show alert if IAlertDialogService requires
+            .confirmationDialogIfNeeded() //show actionSheet if IAlertDialogService requires
             
             // Layer 2 — Snackbar overlay
-            if snackbarManager.isShowing, let msg = snackbarManager.message
+            if snackbarManager.isShowing
             {
                 SnackbarView()
             }
