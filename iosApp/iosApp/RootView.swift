@@ -6,6 +6,7 @@ struct RootView: View
     @StateObject private var nav = Sui_PageNavigationService.shared
     @StateObject private var snackbarManager = SnackbarManager.shared
     @StateObject private var busyIndicatorManager = BusyIndicatorManager.shared
+    @StateObject private var alertService = Sui_AlertDialogService.shared
     
     var body: some View
     {
@@ -26,11 +27,12 @@ struct RootView: View
                             .background(Color(ColorConstants.BgColor.ToUIColor()))
                             //.navigationBarBackButtonHidden(isRoot) //hide navigation bar for root page, as our root is still second page and iOS will show back button for it
                             .navigationBarBackButtonHidden(true) //hide navigation bar for all pages
+                            
                     }
             }
+            .alertIfNeeded(alertService, $alertService.isShowAlert) //show alert if IAlertDialogService requires
+            .confirmationDialogIfNeeded(alertService, $alertService.isShowActionSheet) //show actionSheet if IAlertDialogService requires
             .hideKeyboardOnTap() //hide keyboard when tap anywhere on page
-            .alertIfNeeded() //show alert if IAlertDialogService requires
-            .confirmationDialogIfNeeded() //show actionSheet if IAlertDialogService requires
             
             // Layer 2 — Snackbar overlay
             if snackbarManager.isShowing
@@ -44,6 +46,7 @@ struct RootView: View
                 Sui_BusyIndicatorView()
             }
         }
+        
     }
 }
 

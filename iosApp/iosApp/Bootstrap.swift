@@ -42,7 +42,7 @@ class Bootstrap
             shareFactory: { iOSShareImplementation() },
             zipServiceFactory: { iOSZipService() },
             snackbarFactory: { Sui_SnackbarBarService() },
-            alertDialogFactory: { Sui_AlertDialogService() },
+            alertDialogFactory: { Sui_AlertDialogService.shared },
             mediaPickerFactory: { iOSMediaPickerService() },
             outputFactory: { iOSConsoleOutput() },
             fileLoggerFactory: { iOSFileLogger() },
@@ -50,12 +50,7 @@ class Bootstrap
         )
 
         //Register pages, viewmodels mapping
-        let services = PageInjectedServices()
-//        NavRegistrar.RegisterPageForNavigation({ LoginPage() }, { LoginPageViewModel(injectedService: services) })
-//        NavRegistrar.RegisterPageForNavigation({ MoviesPage() }, { MoviesPageViewModel(injectedService: services) })
-//        NavRegistrar.RegisterPageForNavigation({ MovieDetailPage() }, { MovieDetailPageViewModel(injectedService: services) })
-//        NavRegistrar.RegisterPageForNavigation({ AddEditMoviePage() }, { AddEditMoviePageViewModel(injectedService: services) })
-                
+        let services = PageInjectedServices()                
         NavRegistrar.RegisterPageForNavigation({ LoginPage() }, { LoginPageViewModel(injectedService: services) })
         NavRegistrar.RegisterPageForNavigation({ MoviesPage() }, { MoviesPageViewModel(injectedService: services) })
         NavRegistrar.RegisterPageForNavigation({ DetailsPage() }, { MovieDetailPageViewModel(injectedService: services) })

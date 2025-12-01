@@ -5,78 +5,63 @@
 //  Created by xusan on 24/11/25.
 //
 
+import SharedAppCore
 import SwiftUI
 
 struct DetailsPage: View {
     @EnvironmentObject var adapter: ViewModelObservable
     var vm: MovieDetailPageViewModel { adapter.Vm as! MovieDetailPageViewModel }
+    
+    @StateObject private var alertService = Sui_AlertDialogService.shared
+    
 
     var body: some View {
         VStack(spacing: 20) {
             Text("Details").font(.largeTitle)
-//            Button("Back") {
-//                Task {
-//                    try await SwiftUIPageNavigationService.shared.Navigate(
-//                        name: "../",
-//                        parameters: NavigationParameters(),
-//                        useModalNavigation: false,
-//                        animated: true,
-//                        wrapIntoNav: false
-//                    )
-//                }
-//            }
+
             
-            Button("Login as Root")
+            Button("Show alert")
             {
                 Task
                 {
-                    try await Sui_PageNavigationService.shared.Navigate(
-                        name: "/LoginPageViewModel",
-                        parameters: NavigationParameters(),
-                        useModalNavigation: false,
-                        animated: true,
-                        wrapIntoNav: false
-                    )
+                    do
+                    {
+//                        try await alertService.DisplayAlert(
+//                            title: "Test",
+//                            message: "Test Message",
+//                            cancel: "Close"
+//                        )
+                        
+                       
+                        
+                        let vm = try KoinResolver()
+                            .GetNavigationService()
+                            .GetRootPageModel() as? MoviesPageViewModel
+                        
+                        let item = MenuItem()
+                        item.Type = .logout
+                        vm?.MenuTappedCommand.Execute(param: item)
+                    }
+                    catch
+                    {
+                        print("Error: \(error)")
+                    }
                 }
             }
-            
-            Button("Navigate to Root")
-            {
-                Task
-                {
-                    try await Sui_PageNavigationService.shared.NavigateToRoot(parameters: NavigationParameters())
-                }
-            }
-            
-            Button("Pop multi ../../")
-            {
-                Task
-                {
-                    try await Sui_PageNavigationService.shared.Navigate(
-                        name: "../../",
-                        parameters: NavigationParameters(),
-                        useModalNavigation: false,
-                        animated: true,
-                        wrapIntoNav: false
-                    )
-                }
-            }
-            
-            Button("Pop multi and Push ../../AddEditPage")
-            {
-                Task
-                {
-                    try await Sui_PageNavigationService.shared.Navigate(
-                        name: "../../AddEditMoviePageViewModel",
-                        parameters: NavigationParameters(),
-                        useModalNavigation: false,
-                        animated: true,
-                        wrapIntoNav: false)
-                }
-            }
-            
-            
         }
+        .alert("Sample alert", isPresented: $alertService.isShowAlert) {
+                    // Custom "Yes" button (default prominence)
+                    Button("Yes") {
+                        //viewModel.performYesAction()
+                    }
+                    
+                    // Custom "No" button with a cancel role
+                    Button("No", role: .cancel) {
+                        //viewModel.performNoAction()
+                    }
+                } message: {
+                    Text("Alert message here")
+                }
     }
 }
 

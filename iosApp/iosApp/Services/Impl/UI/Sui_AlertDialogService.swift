@@ -2,10 +2,11 @@ import SharedAppCore
 import SwiftUI
 
 @MainActor
-final class Sui_AlertDialogService: IAlertDialogService
+final class Sui_AlertDialogService: ObservableObject, IAlertDialogService
 {
     @Published var activeRequest: AlertRequest?
-    
+    @Published var isShowAlert: Bool = false
+    @Published var isShowActionSheet: Bool = false
     static let shared = Sui_AlertDialogService()
     
     // MARK: - API
@@ -46,7 +47,6 @@ final class Sui_AlertDialogService: IAlertDialogService
                               accept: String?,
                               cancel: String?) async throws -> Bool
     {
-        
         return try await withCheckedThrowingContinuation { continuation in
             activeRequest = .alert(
                 title: title,
@@ -55,6 +55,8 @@ final class Sui_AlertDialogService: IAlertDialogService
                 cancel: cancel,
                 continuation: continuation
             )
+            
+            self.isShowAlert = true
         }
     }
     
@@ -72,13 +74,17 @@ final class Sui_AlertDialogService: IAlertDialogService
                 buttons: buttons,
                 continuation: continuation
             )
+            
+            isShowActionSheet = true
         }
     }
     
-    func dismissWithoutCompletion()
+    func close()
     {
         // User dismissed the alert by swiping back or tapping outside (iPad)
         activeRequest = nil
+        isShowAlert = false
+        isShowActionSheet = false
     }
 }
 
@@ -90,35 +96,34 @@ enum AlertRequest
 
 extension View
 {
-    func alertIfNeeded() -> some View
+    func alertIfNeeded(_ alertService: Sui_AlertDialogService, _ isPresent: Binding<Bool>) -> some View
     {
-        let service = Sui_AlertDialogService.shared
-        return self.alert(service.alertTitle ?? "", isPresented: service.alertBinding) {
-            if let accept = service.acceptTitle
+        return self.alert(alertService.alertTitle ?? "", isPresented: isPresent) {
+            if let accept = alertService.acceptTitle
             {
-                Button(accept) { service.finishAlert(result: true) }
+                Button(accept) { alertService.finishAlert(result: true) }
             }
             else
             {
-                Button("Close") { service.finishAlert(result: true) }
+                Button("Close") { alertService.finishAlert(result: true) }
             }
             
-            if let cancel = service.cancelTitle
+            if let cancel = alertService.cancelTitle
             {
-                Button(cancel, role: .cancel) { service.finishAlert(result: false) }
+                Button(cancel, role: .cancel) { alertService.finishAlert(result: false) }
             }
         } message: {
-            Text(service.alertMessage ?? "")
+            Text(alertService.alertMessage ?? "")
         }
     }
     
-    func confirmationDialogIfNeeded() -> some View
+    func confirmationDialogIfNeeded(_ alertService: Sui_AlertDialogService, _ isPresent: Binding<Bool>) -> some View
     {
         let service = Sui_AlertDialogService.shared
         
         return self.confirmationDialog(
             service.sheetTitle ?? "",
-            isPresented: service.sheetBinding,
+            isPresented: isPresent,
             titleVisibility: .visible
         ) {
             ForEach(service.sheetButtons, id: \.self) { btn in
@@ -191,29 +196,6 @@ extension Sui_AlertDialogService
         return nil
     }
     
-    var isAlertActive: Bool
-    {
-        if let activeRequest = activeRequest
-        {
-            if case .alert = activeRequest
-            {
-                return true
-            }
-        }
-        return false
-    }
-    
-    var alertBinding: Binding<Bool> {
-           Binding(
-               get: { self.isAlertActive },
-               set: { newValue in
-                   if !newValue {
-                       self.dismissWithoutCompletion()
-                   }
-               }
-           )
-       }
-    
     func finishAlert(result: Bool)
     {
         if let activeRequest = activeRequest
@@ -223,7 +205,7 @@ extension Sui_AlertDialogService
                 continuation.resume(returning: result)
             }
         }
-        self.activeRequest = nil
+        self.close()
     }
     
     
@@ -276,29 +258,6 @@ extension Sui_AlertDialogService
         return nil
     }
     
-    var isSheetActive: Bool
-    {
-        if let activeRequest = activeRequest
-        {
-            if case .actionSheet = activeRequest
-            {
-                return true
-            }
-        }
-        return false
-    }
-    
-    var sheetBinding: Binding<Bool> {
-           Binding(
-               get: { self.isSheetActive },
-               set: { newValue in
-                   if !newValue {
-                       self.dismissWithoutCompletion()
-                   }
-               }
-           )
-       }
-    
     func finishSheet(result: String?)
     {
         if let activeRequest = activeRequest
@@ -308,6 +267,6 @@ extension Sui_AlertDialogService
                 continuation.resume(returning: result)
             }
         }
-        self.activeRequest = nil
+        self.close()
     }
 }
