@@ -30,21 +30,30 @@ struct Sui_SdImageView: View
                 url: url,
                 content: { image in
                     image
-                    .resizable()
-                    .scaledToFit()
-                },
-                placeholder: {
-                    Image(placeholderName ?? "")
                         .resizable()
                         .scaledToFit()
+                },
+                placeholder: {
+                    if let placeholderName,
+                       !placeholderName.isEmpty
+                    {
+                        Image(placeholderName)
+                            .resizable()
+                            .scaledToFit()
+                    }
                 }
             )
         }
         else
         {
-            Image(placeholderName ?? "")
-                .resizable()
-                .scaledToFit()
+            // Only create a placeholder if name is valid
+            if let placeholderName,
+               !placeholderName.isEmpty
+            {
+                Image(placeholderName)
+                    .resizable()
+                    .scaledToFit()
+            }
         }
     }
 }

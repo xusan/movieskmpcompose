@@ -57,7 +57,7 @@ class Bootstrap
 //        NavRegistrar.RegisterPageForNavigation({ AddEditMoviePage() }, { AddEditMoviePageViewModel(injectedService: services) })
                 
         NavRegistrar.RegisterPageForNavigation({ LoginPage() }, { LoginPageViewModel(injectedService: services) })
-        NavRegistrar.RegisterPageForNavigation({ HomePage() }, { MoviesPageViewModel(injectedService: services) })
+        NavRegistrar.RegisterPageForNavigation({ MoviesPage() }, { MoviesPageViewModel(injectedService: services) })
         NavRegistrar.RegisterPageForNavigation({ DetailsPage() }, { MovieDetailPageViewModel(injectedService: services) })
         NavRegistrar.RegisterPageForNavigation({ AddEditPage() }, { AddEditMoviePageViewModel(injectedService: services) })
     }
@@ -87,3 +87,4 @@ typealias MediaFile = SharedAppCore.MediaFile
 typealias MediaSource = SharedAppCore.MediaSource
 typealias IMediaPickerService = SharedAppCore.IMediaPickerService
 public typealias XfColor = SharedAppCore.XfColor
+typealias MovieItemViewModel = SharedAppCore.MovieItemViewModel

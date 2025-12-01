@@ -13,7 +13,6 @@ struct Sui_SvgCircleButton: View
                 .padding(12)                   // padding inside circle
         }
         .background(Color.white)
-        .clipShape(Circle())
-        .shadow(radius: 2)
+        .clipShape(Circle())        
     }
 }

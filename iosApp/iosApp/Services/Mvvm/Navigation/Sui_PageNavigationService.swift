@@ -31,7 +31,7 @@ final class Sui_PageNavigationService: NSObject, ObservableObject, IPageNavigati
     
     //This is a Sync version of navigation, and used mostly on app startup to set root page
     //Sync version is more prefered at app startup
-    //because Async version takes some delay to navigate due to async nature and user can see black root view if Async version is used
+    //because Async version takes some delay to navigate due to async nature and user can see black root view if Async version is used    
     func OnNavigateFirstTime(_ url: String, _ params: INavigationParameters)
     {
         let vmName = url.replacingOccurrences(of: "/", with: "")
@@ -45,11 +45,13 @@ final class Sui_PageNavigationService: NSObject, ObservableObject, IPageNavigati
         Stack = [newRoot]
     }
 
+    @MainActor
     func NavigateToRoot(parameters: (any INavigationParameters)?) async throws
     {
         try await popToRoot(params: parameters ?? NavigationParameters())
     }
 
+    @MainActor
     func Navigate(
         name url: String,
         parameters: INavigationParameters?,

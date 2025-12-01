@@ -20,11 +20,12 @@ struct RootView: View
                     .navigationDestination(for: PageItem.self)
                     { item in
                         
-                        let isRoot = item.id == nav.Stack.first?.id
+                        //let isRoot = item.id == nav.Stack.first?.id
                         
                         nav.GetViewForItem(item)
                             .background(Color(ColorConstants.BgColor.ToUIColor()))
-                            .navigationBarBackButtonHidden(isRoot) //hide navigation bar for root page, as our root is still second page and iOS will show back button for it
+                            //.navigationBarBackButtonHidden(isRoot) //hide navigation bar for root page, as our root is still second page and iOS will show back button for it
+                            .navigationBarBackButtonHidden(true) //hide navigation bar for all pages
                     }
             }
             .hideKeyboardOnTap() //hide keyboard when tap anywhere on page

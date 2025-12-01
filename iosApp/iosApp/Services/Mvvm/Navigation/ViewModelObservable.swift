@@ -37,7 +37,14 @@ final class ViewModelObservable : ObservableObject
 
         if propertyName == #keyPath(Vm.BusyLoading).propertyName()
         {
-            BusyIndicatorManager.shared.show(nil)
+            if let isBusy = Vm?.BusyLoading, isBusy
+            {
+                BusyIndicatorManager.shared.show(nil)
+            }
+            else
+            {
+                BusyIndicatorManager.shared.close()
+            }
         }
         
         let payload = PropertyChangedPayload(String(describing: type(of: Vm!)), propertyName)
