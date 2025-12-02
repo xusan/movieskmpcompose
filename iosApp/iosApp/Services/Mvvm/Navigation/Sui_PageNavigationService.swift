@@ -329,12 +329,7 @@ final class Sui_PageNavigationService: NSObject, ObservableObject, IPageNavigati
         let pageItem = Stack.first{ $0.VmName == item.VmName } //ViewModelObservable(vm: item.Vm)
         let vmObs = pageItem!.VmObs
         let page = info.createPage()
-            .environmentObject(vmObs)
-        
-        if let mainVm = vmObs.Vm as? MoviesPageViewModel
-        {
-            print("MovieItems.Count = \(mainVm.MovieItems.Count())")
-        }
+            .environmentObject(vmObs)        
         
         return AnyView(page)
     }

@@ -26,48 +26,46 @@ struct AddEditMoviePage: View
                 onRightTap: { Vm.DeleteCommand.Execute() }
             )
             
-            ScrollView(showsIndicators: false)
+            VStack(spacing: 25)
             {
-                VStack(spacing: 25)
+                CenterImage
+                    .frame(maxWidth: .infinity)
+                
+                VStack(spacing: 20)
                 {
-                    CenterImage
-                        .frame(maxWidth: .infinity)
+                    // NAME
+                    EditDetailRow(label: "Name:", isDescription: false) {
+                        Sui_EditTextField(
+                            text: $nameText,
+                            placeholder: "" // UI already shows "Name:"
+                        )
+                        .onChange(of: nameText) {
+                            Vm.Model?.Name = nameText
+                        }
+                    }
                     
-                    VStack(spacing: 20)
-                    {
-                        // NAME
-                        EditDetailRow(label: "Name:", isDescription: false) {
-                            Sui_EditTextField(
-                                text: $nameText,
-                                placeholder: "" // UI already shows "Name:"
-                            )
-                            .onChange(of: nameText) {
-                                Vm.Model?.Name = nameText
+                    // DESCRIPTION
+                    EditDetailRow(label: "Description:", isDescription: true) {
+                        Sui_MultilineTextField(text: $descriptionText)
+                            .onChange(of: descriptionText) {
+                                Vm.Model?.Overview = descriptionText
                             }
-                        }
-
-                        // DESCRIPTION
-                        EditDetailRow(label: "Description:", isDescription: true) {
-                            Sui_MultilineTextField(text: $descriptionText)
-                                .onChange(of: descriptionText) {
-                                    Vm.Model?.Overview = descriptionText
-                                }
-                        }
                     }
-                    .padding(.horizontal, NumConstants.PageHMargin)
-                    
-                    Spacer()
-                    
-                    Sui_PrimaryButton(text: "Save") {
-                        Vm.Model?.Name = nameText
-                        Vm.Model?.Overview = descriptionText
-                        Vm.SaveCommand.Execute()
-                    }
-                    .padding(.horizontal, NumConstants.PageHMargin)
                 }
+                .padding(.horizontal, NumConstants.PageHMargin)
+                
+                Spacer()
+                
+                Sui_PrimaryButton(text: "Save") {
+                    Vm.Model?.Name = nameText
+                    Vm.Model?.Overview = descriptionText
+                    Vm.SaveCommand.Execute()
+                }
+                .padding(.horizontal, NumConstants.PageHMargin)
             }
         }
-        .onAppear {
+        .onAppear
+        {
             loadInitialModel()
         }
         .onReceive(vmObs.eventBroadcaster) { args in
@@ -79,15 +77,11 @@ struct AddEditMoviePage: View
                 model = Vm.Model     // refresh UI image
                 vmObs.objectWillChange.send()
             }
-            
-            if args.propertyName == #keyPath(AddEditMoviePageViewModel.Model)
-            {
-                loadInitialModel()   // VM replaced whole model
-            }
         }
     }
     
-    private func loadInitialModel() {
+    private func loadInitialModel()
+    {
         model = Vm.Model
         nameText = Vm.Model?.Name ?? ""
         descriptionText = Vm.Model?.Overview ?? ""
@@ -135,24 +129,27 @@ struct AddEditMoviePage: View
 struct EditDetailRow<Content: View>: View
 {
     let label: String
-    let content: Content
+    let contentView: Content
     let verticalAligment: VerticalAlignment
     
-    init(label: String, isDescription: Bool, @ViewBuilder content: () -> Content) {
+    init(label: String, isDescription: Bool, @ViewBuilder content: () -> Content)
+    {
         self.label = label
-        self.content = content()
+        self.contentView = content()
         
         self.verticalAligment = isDescription ? .top : .center
     }
     
-    var body: some View {
-        HStack(alignment: verticalAligment, spacing: 8) {
+    var body: some View
+    {
+        HStack(alignment: verticalAligment, spacing: 8)
+        {
             Text(label)
                 .font(.custom("Sen", size: 15))
                 .foregroundColor(Color(ColorConstants.LabelColor.ToUIColor()))
                 .frame(width: 90, alignment: .trailing)
             
-            content
+            contentView
         }
     }
 }

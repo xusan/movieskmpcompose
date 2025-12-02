@@ -13,8 +13,7 @@ struct Sui_RectButton<Content: View>: View {
         ZStack {
             content()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .padding(.horizontal, 16) // optional, like left/right padding
-                //.foregroundColor(.white)
+                .padding(.horizontal, 16) // optional, like left/right padding                
         }
         .frame(maxWidth: .infinity)      // fill parent width
         .frame(height: 50)               // fixed height
