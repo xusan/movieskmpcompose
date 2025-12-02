@@ -5,6 +5,8 @@ struct MoviesPage: View
 {
     @EnvironmentObject var vmObs: ViewModelObservable
     var Vm: MoviesPageViewModel { vmObs.Vm as! MoviesPageViewModel }
+    
+    @State private var moviesCollection: ObservableCollection<MovieItemViewModel>?
 
     /// Used so `.onReceive` can filter events for THIS page only.
     private let vmName: String
@@ -124,10 +126,29 @@ struct MoviesPage: View
             // handle when MovieItems is re-assigned (not added/removed)
             if args.propertyName == #keyPath(MoviesPageViewModel.MovieItems)
             {
+                onCollectionSet()
                 //Movies items is set so force to re-render whole view
                 vmObs.objectWillChange.send()
             }
         }
+    }
+    
+    
+    func onCollectionSet()
+    {
+        if let collection = moviesCollection
+        {
+            collection.CollectionChanged.RemoveListener(listener_: MoviesItems_CollectionChanged)
+        }
+        
+        moviesCollection = Vm.MovieItems
+        moviesCollection?.CollectionChanged.AddListener(listener_: MoviesItems_CollectionChanged)
+    }
+    
+    private func MoviesItems_CollectionChanged(e: ObservableCollectionChange?)
+    {        
+        //Movies items changed so force to re-render whole view
+        vmObs.objectWillChange.send()
     }
 }
 

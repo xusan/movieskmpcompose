@@ -28,12 +28,7 @@ final class ViewModelObservable : ObservableObject
         self.vmName = String(describing: type(of: vm))
         
         vm.PropertyChanged.AddListener(listener_: OnViewModelPropertyChanged)
-        
-        if let mainVm = self.Vm as? MoviesPageViewModel
-        {
-            mainVm.MovieItems.CollectionChanged.AddListener(listener_: MoviesItems_OnCollectionChanged)
-        }
-        
+       
         do
         {
             loggingService = try KoinResolver().GetLoggingService()
@@ -64,23 +59,11 @@ final class ViewModelObservable : ObservableObject
         let payload = PropertyChangedPayload(vmName, propertyName)
         eventBroadcaster.send(payload)
     }
-    
-    private func MoviesItems_OnCollectionChanged(e: ObservableCollectionChange?)
-    {
-        let payload = PropertyChangedPayload(vmName, #keyPath(MoviesPageViewModel.MovieItems))
-        eventBroadcaster.send(payload)
-    }
-    
+        
     // This method is called by our navigation system whenever
     // the page is removed from the navigation stack.
     func Destroy()
     {
-        if let mainVm = Vm as? MoviesPageViewModel
-        {
-            mainVm.MovieItems.CollectionChanged.RemoveListener(listener_: MoviesItems_OnCollectionChanged)
-        }
-        
-        
         Vm?.PropertyChanged.RemoveListener(listener_: OnViewModelPropertyChanged)
         Vm?.Destroy()
         Vm = nil
