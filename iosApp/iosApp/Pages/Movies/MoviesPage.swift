@@ -122,7 +122,7 @@ struct MoviesPage: View
             }
 
             // handle when MovieItems is re-assigned (not added/removed)
-            if args.propertyName == #keyPath(MoviesPageViewModel.MovieItems).propertyName()
+            if args.propertyName == #keyPath(MoviesPageViewModel.MovieItems)
             {
                 //Movies items is set so force to re-render whole view
                 vmObs.objectWillChange.send()

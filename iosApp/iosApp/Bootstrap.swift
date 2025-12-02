@@ -43,7 +43,7 @@ class Bootstrap
             zipServiceFactory: { iOSZipService() },
             snackbarFactory: { Sui_SnackbarBarService() },
             alertDialogFactory: { Sui_AlertDialogService.shared },
-            mediaPickerFactory: { iOSMediaPickerService() },
+            mediaPickerFactory: { Sui_MediaPickerService() },
             outputFactory: { iOSConsoleOutput() },
             fileLoggerFactory: { iOSFileLogger() },
             errorTracking : { errorTrackingService }

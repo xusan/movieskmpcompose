@@ -15,18 +15,18 @@ final class Sui_PageNavigationService: NSObject, ObservableObject, IPageNavigati
     func GetCurrentPageModel() -> PageViewModel?
     {
         guard let last = Stack.last else { return nil }
-        return last.Vm
+        return last.VmObs.Vm
     }
 
     func GetNavStackModels() -> [PageViewModel]
     {
-        Stack.compactMap { $0.Vm }
+        Stack.compactMap { $0.VmObs.Vm }
     }
 
     func GetRootPageModel() -> PageViewModel?
     {
         guard let first = Stack.first else { return nil }
-        return first.Vm
+        return first.VmObs.Vm
     }
     
     //This is a Sync version of navigation, and used mostly on app startup to set root page
@@ -41,14 +41,15 @@ final class Sui_PageNavigationService: NSObject, ObservableObject, IPageNavigati
         vm.OnNavigatedTo(parameters: params)
         vm.OnAppeared()
         
-        let newRoot = PageItem(vmName, vm)
+        let vmObs = ViewModelObservable(vm: vm)
+        let newRoot = PageItem(vmName, vmObs)
         Stack = [newRoot]
     }
 
     @MainActor
     func NavigateToRoot(parameters: (any INavigationParameters)?) async throws
     {
-        try await popToRoot(params: parameters ?? NavigationParameters())
+        try await OnPopToRootAsync(params: parameters ?? NavigationParameters())
     }
 
     @MainActor
@@ -97,18 +98,19 @@ final class Sui_PageNavigationService: NSObject, ObservableObject, IPageNavigati
 
         if let oldTopItem = Stack.last
         {
-            oldTopItem.Vm.OnNavigatedFrom(parameters: NavigationParameters())
+            oldTopItem.VmObs.Vm!.OnNavigatedFrom(parameters: NavigationParameters())
         }
         
         let vm = info.createVm()
-        let newItem = PageItem(vmName, vm)
-        newItem.Vm.Initialize(parameters: params)
-        newItem.Vm.OnNavigatedTo(parameters: params)
+        let vmObs = ViewModelObservable(vm: vm)
+        let newItem = PageItem(vmName, vmObs)
+        vm.Initialize(parameters: params)
+        vm.OnNavigatedTo(parameters: params)
 
         Stack.append(newItem)
         try await Task.sleep(for: .seconds(0.3))
         
-        newItem.Vm.OnAppeared()
+        vm.OnAppeared()
     }
 
     // MARK: POP
@@ -118,19 +120,19 @@ final class Sui_PageNavigationService: NSObject, ObservableObject, IPageNavigati
         guard let oldTopItem = Stack.last else { return }
         guard Stack.count >= 2 else { return }
         
-        oldTopItem.Vm.OnNavigatedFrom(parameters: NavigationParameters())
+        oldTopItem.VmObs.Vm!.OnNavigatedFrom(parameters: NavigationParameters())
        
         let newTopItem = Stack[Stack.count - 2]
-        newTopItem.Vm.OnNavigatedTo(parameters: params)
+        newTopItem.VmObs.Vm!.OnNavigatedTo(parameters: params)
 
         Stack.removeLast()
         
         try await Task.sleep(for: .seconds(0.3))
-
-        oldTopItem.Vm.Destroy()
+        
+        oldTopItem.VmObs.Destroy()
     }
 
-    private func popToRoot(params: INavigationParameters) async throws
+    private func OnPopToRootAsync(params: INavigationParameters) async throws
     {
         guard Stack.count > 1 else { return }
 
@@ -143,11 +145,11 @@ final class Sui_PageNavigationService: NSObject, ObservableObject, IPageNavigati
             // OnNavigatedFrom only for the current top (before changes)
             if let oldTopItem = Stack.last
             {
-                oldTopItem.Vm.OnNavigatedFrom(parameters: NavigationParameters())
+                oldTopItem.VmObs.Vm!.OnNavigatedFrom(parameters: NavigationParameters())
             }
             
             let root = Stack.first!
-            root.Vm.OnNavigatedTo(parameters: params)
+            root.VmObs.Vm!.OnNavigatedTo(parameters: params)
             
             let removedItems = Stack.dropFirst()
             
@@ -158,7 +160,7 @@ final class Sui_PageNavigationService: NSObject, ObservableObject, IPageNavigati
             // Destroy all removed VMs
             for removedItem in removedItems
             {
-                removedItem.Vm.Destroy()
+                removedItem.VmObs.Destroy()
             }
         }
     }
@@ -174,7 +176,7 @@ final class Sui_PageNavigationService: NSObject, ObservableObject, IPageNavigati
         // OnNavigatedFrom only for the current top (before changes)
         if let oldTopItem = Stack.last
         {
-            oldTopItem.Vm.OnNavigatedFrom(parameters: NavigationParameters())
+            oldTopItem.VmObs.Vm!.OnNavigatedFrom(parameters: NavigationParameters())
         }
         
         // Determine final count to keep
@@ -190,7 +192,7 @@ final class Sui_PageNavigationService: NSObject, ObservableObject, IPageNavigati
         // Destroy all removed VMs
         for removedItem in removedItems
         {
-            removedItem.Vm.Destroy()
+            removedItem.VmObs.Destroy()
         }
     }
 
@@ -206,15 +208,16 @@ final class Sui_PageNavigationService: NSObject, ObservableObject, IPageNavigati
         // create new vm & entry inline
         let info = NavRegistrar.GetPageInfo(vmName: newVmName)
         let vm = info.createVm()
-        let newItem = PageItem(newVmName, vm)
-        newItem.Vm.Initialize(parameters: params)
+        let vmObs = ViewModelObservable(vm: vm)
+        let newItem = PageItem(newVmName, vmObs)
+        vm.Initialize(parameters: params)
         
         // OnNavigatedFrom only for previous top
         if let oldTop = Stack.last
         {
-            oldTop.Vm.OnNavigatedFrom(parameters: NavigationParameters())
+            oldTop.VmObs.Vm!.OnNavigatedFrom(parameters: NavigationParameters())
         }
-        newItem.Vm.OnNavigatedTo(parameters: params)
+        newItem.VmObs.Vm!.OnNavigatedTo(parameters: params)
         
         // compute new stack keeping prefix and adding newEntry
         let newCount = Stack.count - popCount
@@ -227,7 +230,7 @@ final class Sui_PageNavigationService: NSObject, ObservableObject, IPageNavigati
         // Destroy all removed VMs
         for removedItem in removedItems
         {
-            removedItem.Vm.Destroy()
+            removedItem.VmObs.Destroy()
         }
     }
 
@@ -253,10 +256,11 @@ final class Sui_PageNavigationService: NSObject, ObservableObject, IPageNavigati
             //if there is no other pages then just create this root and it will be pushed without animation below
             let info = NavRegistrar.GetPageInfo(vmName: vmName)
             let vm = info.createVm()
-            newRoot = PageItem(vmName, vm)
-            newRoot.Vm.Initialize(parameters: params)
-            newRoot.Vm.OnNavigatedTo(parameters: params)
-            newRoot.Vm.OnAppeared()
+            let vmObs = ViewModelObservable(vm: vm)
+            newRoot = PageItem(vmName, vmObs)
+            vm.Initialize(parameters: params)
+            vm.OnNavigatedTo(parameters: params)
+            vm.OnAppeared()
         }
         
         // Keep only the new page,
@@ -271,7 +275,7 @@ final class Sui_PageNavigationService: NSObject, ObservableObject, IPageNavigati
         // Destroy all removed VMs
         for removedItem in removedItems
         {
-            removedItem.Vm.Destroy()
+            removedItem.VmObs.Destroy()
         }
     }
 
@@ -288,7 +292,7 @@ final class Sui_PageNavigationService: NSObject, ObservableObject, IPageNavigati
         // OnNavigatedFrom for previous item in this push sequence (if any)
         if let oldTopItem = Stack.last
         {
-            oldTopItem.Vm.OnNavigatedFrom(parameters: NavigationParameters())
+            oldTopItem.VmObs.Vm!.OnNavigatedFrom(parameters: NavigationParameters())
         }
         
         var newItems: [PageItem] = []
@@ -298,9 +302,10 @@ final class Sui_PageNavigationService: NSObject, ObservableObject, IPageNavigati
         {
             let info = NavRegistrar.GetPageInfo(vmName: name)
             let vm = info.createVm()
-            let item = PageItem(name, vm)
-            item.Vm.Initialize(parameters: params)
-            item.Vm.OnNavigatedTo(parameters: params)
+            let vmObs = ViewModelObservable(vm: vm)
+            let item = PageItem(name, vmObs)
+            vm.Initialize(parameters: params)
+            vm.OnNavigatedTo(parameters: params)
             
             newItems.append(item)
         }
@@ -313,7 +318,7 @@ final class Sui_PageNavigationService: NSObject, ObservableObject, IPageNavigati
         // Destroy all removed VMs
         for removedItem in removedItems
         {
-            removedItem.Vm.Destroy()
+            removedItem.VmObs.Destroy()
         }
     }
 
@@ -321,15 +326,17 @@ final class Sui_PageNavigationService: NSObject, ObservableObject, IPageNavigati
     func GetViewForItem(_ item: PageItem) -> AnyView
     {
         let info = NavRegistrar.GetPageInfo(vmName: item.VmName)
-        let obs = ViewModelObservable(vm: item.Vm)
-        
+        let pageItem = Stack.first{ $0.VmName == item.VmName } //ViewModelObservable(vm: item.Vm)
+        let vmObs = pageItem!.VmObs
         let page = info.createPage()
-            .environmentObject(obs)
+            .environmentObject(vmObs)
         
-        return  AnyView(page)
-//        let pName = item.VmName.replacingOccurrences(of: "ViewModel", with: "")
-//        let rootPage = PageRoot(content: page, pageName: pName)
-//        return AnyView(rootPage)
+        if let mainVm = vmObs.Vm as? MoviesPageViewModel
+        {
+            print("MovieItems.Count = \(mainVm.MovieItems.Count())")
+        }
+        
+        return AnyView(page)
     }
     
     static let shared = Sui_PageNavigationService()

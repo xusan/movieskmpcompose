@@ -65,7 +65,6 @@ struct AddEditMoviePage: View
                     }
                     .padding(.horizontal, NumConstants.PageHMargin)
                 }
-                //.padding(.vertical, 20)
             }
         }
         .onAppear {
@@ -75,11 +74,14 @@ struct AddEditMoviePage: View
             
             guard args.vmName == vmName else { return }
             
-            if args.propertyName == AddEditMoviePageViewModel.companion.PhotoChangedEvent {
+            if args.propertyName == AddEditMoviePageViewModel.companion.PhotoChangedEvent
+            {
                 model = Vm.Model     // refresh UI image
+                vmObs.objectWillChange.send()
             }
             
-            if args.propertyName == #keyPath(AddEditMoviePageViewModel.Model).propertyName() {
+            if args.propertyName == #keyPath(AddEditMoviePageViewModel.Model)
+            {
                 loadInitialModel()   // VM replaced whole model
             }
         }
