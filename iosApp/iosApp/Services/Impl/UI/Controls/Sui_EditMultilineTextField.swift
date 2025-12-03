@@ -1,12 +1,12 @@
 import SwiftUI
 
-struct MultilineTextField: View
+struct Sui_MultilineTextField: View
 {
     @Binding var text: String
     
     var focusedBorderColor: Color = Color(ColorConstants.PrimaryColor.ToUIColor())
     var unfocusedBorderColor: Color = .clear
-    var borderWidth: CGFloat = 2
+    var borderWidth: CGFloat = 4
     var cornerRadius: CGFloat = 25
     var fixedHeight: CGFloat = 150
 
@@ -21,17 +21,17 @@ struct MultilineTextField: View
                 .cornerRadius(cornerRadius)
 
             // Scrollable multiline text field
-            ScrollView {
+//            ScrollView {
                 TextEditor(text: $text)
                     .frame(minHeight: fixedHeight, maxHeight: fixedHeight)
                     .padding(.top, 12)
                     .padding(.leading, 15)
                     .padding(.bottom, 10)
-                    .padding(.trailing, 50)
+                    .padding(.trailing, 15)
                     .font(.custom("Sen", size: 15))
                     .foregroundColor(.black)
                     .focused($isFocused)
-            }
+            //}
         }
         .frame(height: fixedHeight)
     }

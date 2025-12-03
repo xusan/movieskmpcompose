@@ -8,15 +8,17 @@ import com.base.mvvm.Navigation.IPageNavigationService
 import com.base.mvvm.Navigation.NavigationParameters
 import com.base.mvvm.Navigation.UrlNavigationHelper
 import com.base.mvvm.ViewModels.PageViewModel
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-class ComposeNavigationService : IPageNavigationService
+class DroidPageNavigationService : IPageNavigationService
 {
 
     lateinit var navController: NavHostController
     //private set
 
-    private val pages = mutableListOf<NavPage>()      // VM stack
-    val stateStack = mutableStateListOf<NavPage>()   // exposed to Compose UI
+    val statePages = mutableStateListOf<NavPage>()      // VM stack
 
     private var pendingParams: INavigationParameters? = null
 
@@ -36,13 +38,13 @@ class ComposeNavigationService : IPageNavigationService
 
     override fun GetRootPageModel(): PageViewModel?
     {
-        val vm = pages.firstOrNull()?.vm
+        val vm = statePages.firstOrNull()?.vm
         return vm
     }
 
     override fun GetNavStackModels(): List<PageViewModel>
     {
-        val viewModels = pages.map { x -> x.vm }
+        val viewModels = statePages.map { x -> x.vm }
         return viewModels
     }
 
@@ -88,7 +90,7 @@ class ComposeNavigationService : IPageNavigationService
     override suspend fun NavigateToRoot(parameters: INavigationParameters?)
     {
         var multiplePops = ""
-        repeat(pages.size - 1) {
+        repeat(statePages.size - 1) {
             multiplePops += "../"
         }
         OnMultiPopAsync(multiplePops, parameters ?: NavigationParameters())
@@ -105,10 +107,7 @@ class ComposeNavigationService : IPageNavigationService
 
     fun OnPopAsync(params: INavigationParameters)
     {
-        val popped = popPage()
-        popped?.vm?.OnNavigatedFrom(params)
-        popped?.vm?.Destroy()
-
+        popPage()
         // Now notify next VM
         currentVm()?.OnNavigatedTo(params)
 
@@ -119,10 +118,9 @@ class ComposeNavigationService : IPageNavigationService
     {
         val count = url.countMatches("../")
 
-        repeat(count) {
-            val popped = popPage()
-            popped?.vm?.OnNavigatedFrom(params)
-            popped?.vm?.Destroy()
+        repeat(count)
+        {
+            popPage()
         }
 
         currentVm()?.OnNavigatedTo(params)
@@ -138,9 +136,7 @@ class ComposeNavigationService : IPageNavigationService
         val vmName = url.replace("../", "")
 
         repeat(pops) {
-            val popped = popPage()
-            popped?.vm?.OnNavigatedFrom(NavigationParameters())
-            popped?.vm?.Destroy()
+            popPage()
             navController.popBackStack()
         }
 
@@ -153,8 +149,11 @@ class ComposeNavigationService : IPageNavigationService
     {
         val vmName = url.replace("/", "")
 
-        pages.forEach { it.vm.Destroy() }
-        pages.clear()
+        repeat(statePages.size) //remove except root
+        {
+            popPage()
+            navController.popBackStack()
+        }
 
         pendingParams = params
 
@@ -168,8 +167,11 @@ class ComposeNavigationService : IPageNavigationService
     {
         val names = url.split("/").filter { it.isNotBlank() }
 
-        pages.forEach { it.vm.Destroy() }
-        pages.clear()
+        repeat(statePages.size) //remove except root
+        {
+            popPage()
+            navController.popBackStack()
+        }
 
         pendingParams = params
 
@@ -184,41 +186,55 @@ class ComposeNavigationService : IPageNavigationService
         }
     }
 
+    val viewModels = mutableMapOf<String, PageViewModel>()
+    public fun GetOrCreateViewModel(entryId: String, vmName: String) : PageViewModel
+    {
+        val vm = viewModels[entryId]
+        if(vm == null)
+        {
+            val newVm = ComposeNavRegistrar.CreateViewModel(vmName, pendingParams ?: NavigationParameters())
+            pendingParams = null
+            val navPage = NavPage(entryId, vmName, newVm)
+            statePages.add(navPage)
+            //cache vm
+            viewModels[entryId] = newVm
+
+            return newVm
+        }
+        else
+        {
+            return vm;
+        }
+    }
+
     // Kotlin extension
     private fun String.countMatches(sub: String): Int = this.split(sub).size - 1
 
-    fun pushPage(page: NavPage)
-    {
-        pages.add(page)
-        syncState()
-    }
-
     fun popPage(): NavPage?
     {
-        val p = pages.removeLastOrNull()
-        syncState()
-        return p
+        val poppedPage = statePages.removeLastOrNull()
+        poppedPage?.vm?.OnNavigatedFrom(NavigationParameters())
+
+        GlobalScope.launch {
+            //delay before remove: to make sure that the viewmodel is not used by compose anymore
+            delay(300)
+            viewModels.remove(poppedPage?.id)
+            poppedPage?.vm?.Destroy()
+        }
+        return poppedPage
     }
 
-    fun currentPage(): NavPage? = pages.lastOrNull()
+    fun currentPage(): NavPage? = statePages.lastOrNull()
 
     fun currentVm(): PageViewModel? = currentPage()?.vm
 
-    fun consumeParams(): INavigationParameters
-    {
-        val p = pendingParams ?: NavigationParameters()
-        pendingParams = null
-        return p
-    }
 
-    private fun syncState()
-    {
-        stateStack.clear()
-        stateStack.addAll(pages)
-    }
+
+
 }
 
 data class NavPage(
+    val id: String,
     val vmName: String,
     val vm: PageViewModel,
 )

@@ -1,39 +1,6 @@
 import SwiftUI
 
-class BusyIndicatorManager: ObservableObject
-{
-    static let shared = BusyIndicatorManager()
-    
-    @Published var text: String? = "On it.."
-    @Published var isShowing: Bool = false
-    
-    func show(_ msg: String?)
-    {
-        if let msg = msg
-        {
-            text = msg
-        }
-
-        // Force re-show (important!)
-        withAnimation {
-            self.isShowing = false
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
-            withAnimation {
-                self.isShowing = true
-            }
-        }
-    }
-    
-    func close()
-    {
-        withAnimation {
-            isShowing = false
-        }
-    }
-}
-
-struct BusyIndicatorView: View
+struct Sui_BusyIndicatorView: View
 {
     var primaryColor = Color(ColorConstants.PrimaryColor.ToUIColor())
     var bgColor = Color(ColorConstants.BgColor.ToUIColor())
@@ -67,5 +34,38 @@ struct BusyIndicatorView: View
             .transition(.scale.combined(with: .opacity))
         }
         .animation(.easeInOut(duration: 0.25), value: BusyIndicatorManager.shared.isShowing)
+    }
+}
+
+class BusyIndicatorManager: ObservableObject
+{
+    static let shared = BusyIndicatorManager()
+    
+    @Published var text: String? = "On it.."
+    @Published var isShowing: Bool = false
+    
+    func show(_ msg: String?)
+    {
+        if let msg = msg
+        {
+            text = msg
+        }
+
+        // Force re-show (important!)
+        withAnimation {
+            self.isShowing = false
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+            withAnimation {
+                self.isShowing = true
+            }
+        }
+    }
+    
+    func close()
+    {
+        withAnimation {
+            isShowing = false
+        }
     }
 }

@@ -1,14 +1,16 @@
-package com.movieskmp.compose.movieskmpcompose.ViewModels
+package com.movieskmp.compose.movieskmpcompose.ViewModels.TestVm
 
 import com.app.shared.Base.AppPageViewModel
 import com.app.shared.Base.PageInjectedServices
 import com.base.mvvm.Navigation.INavigationParameters
-import com.base.mvvm.ViewModels.InjectedService
-import com.base.mvvm.ViewModels.PageViewModel
 
 class FirstViewModel(injectedService: PageInjectedServices) : AppPageViewModel(injectedService)
 {
-    var message = "First Page"
+    var Message: String = "First Page"
+        set(value)
+        {
+            SetProperty(::Message.name, field, value) { field = it }
+        }
 
     override fun OnNavigatedTo(parameters: INavigationParameters)
     {
@@ -24,5 +26,11 @@ class FirstViewModel(injectedService: PageInjectedServices) : AppPageViewModel(i
         Navigate("SecondViewModel")
     }
 
+    var index = 1;
+    fun UpdateMessage()
+    {
+        index++
+        Message = "First Page $index"
+    }
 
 }

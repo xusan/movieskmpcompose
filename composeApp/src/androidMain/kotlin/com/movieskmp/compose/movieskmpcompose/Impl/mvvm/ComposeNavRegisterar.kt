@@ -24,6 +24,19 @@ object ComposeNavRegistrar {
         )
     }
 
+    fun CreateViewModel(vmName: String, params: INavigationParameters): PageViewModel
+    {
+        val entry = map[vmName]
+        if(entry == null)
+            throw Exception("The ViewModel with name $vmName is not registered and can not be found")
+
+        val vm = entry.vmFactory().apply {
+            Initialize(params)
+            OnNavigatedTo(params)
+        }
+
+        return vm
+    }
 
     fun CreateViewModelFromEntry(entry: NavEntry, params: INavigationParameters): PageViewModel
     {
