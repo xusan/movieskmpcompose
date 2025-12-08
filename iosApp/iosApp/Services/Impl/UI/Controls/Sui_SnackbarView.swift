@@ -1,39 +1,7 @@
 import SharedAppCore
 import SwiftUI
 
-class SnackbarManager: ObservableObject
-{
-    static let shared = SnackbarManager()
-    
-    @Published var message: String?
-    @Published var severity: SeverityType = .info
-    @Published var isShowing: Bool = false
-    
-    func show(message: String, severity: SeverityType)
-    {
-        self.message = message
-        self.severity = severity
-
-        // Force re-show (important!)
-        withAnimation {
-            self.isShowing = false
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
-            withAnimation {
-                self.isShowing = true
-            }
-        }
-    }
-    
-    func close()
-    {
-        withAnimation {
-            isShowing = false
-        }
-    }
-}
-
-struct SnackbarView: View
+struct Sui_SnackbarView: View
 {
     var fontFamily: String? = "Sen"
     var fontFamily2: String? = "Sen-Bold"
@@ -108,5 +76,37 @@ struct SnackbarView: View
             return .custom(f, size: 16)
         }
         return .system(size: 16)
+    }
+}
+
+class SnackbarManager: ObservableObject
+{
+    static let shared = SnackbarManager()
+    
+    @Published var message: String?
+    @Published var severity: SeverityType = .info
+    @Published var isShowing: Bool = false
+    
+    func show(message: String, severity: SeverityType)
+    {
+        self.message = message
+        self.severity = severity
+
+        // Force re-show (important!)
+        withAnimation {
+            self.isShowing = false
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+            withAnimation {
+                self.isShowing = true
+            }
+        }
+    }
+    
+    func close()
+    {
+        withAnimation {
+            isShowing = false
+        }
     }
 }

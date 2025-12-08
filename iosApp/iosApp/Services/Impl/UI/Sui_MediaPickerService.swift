@@ -13,7 +13,7 @@ import SharedAppCore // KMP module exposing IMediaPickerService, ILoggingService
 /// iOS implementation of the shared IMediaPickerService KMP interface.
 /// Provides async image picking from gallery or camera with optional resize/compression.
 /// All public methods are marked `@MainActor` to ensure UIKit safety.
-@MainActor class iOSMediaPickerService: NSObject, IMediaPickerService
+@MainActor class Sui_MediaPickerService: NSObject, IMediaPickerService
 {
     /// Cached presenting controller (used to show pickers)
     private weak var presentingVC: UIViewController?
@@ -73,7 +73,7 @@ import SharedAppCore // KMP module exposing IMediaPickerService, ILoggingService
     private func ensurePresentingController() -> UIViewController? {
         if presentingVC == nil
         {
-            //presentingVC = CurrentController.GetTopViewController()
+            presentingVC = CurrentController.GetTopViewController()
         }
         if presentingVC == nil
         {
@@ -126,7 +126,7 @@ import SharedAppCore // KMP module exposing IMediaPickerService, ILoggingService
         
         let picker = PHPickerViewController(configuration: config)
         picker.delegate = self
-        presentingVC?.present(picker, animated: true)
+        vc.present(picker, animated: true)
     }
 
     /// Presents UIImagePickerController for capturing a photo using the camera.
@@ -161,7 +161,7 @@ import SharedAppCore // KMP module exposing IMediaPickerService, ILoggingService
             // Fallback for older OS (rare, iOS 13 and below)
             picker.mediaTypes = [kUTTypeImage as String]
         }
-        presentingVC?.present(picker, animated: true)
+        vc.present(picker, animated: true)
     }
 
     /// Applies resize and compression based on MediaOptions.
@@ -227,7 +227,7 @@ import SharedAppCore // KMP module exposing IMediaPickerService, ILoggingService
 }
 
 // MARK: - PHPicker Delegate
-extension iOSMediaPickerService: PHPickerViewControllerDelegate
+extension Sui_MediaPickerService: PHPickerViewControllerDelegate
 {
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult])
     {
@@ -275,7 +275,7 @@ extension iOSMediaPickerService: PHPickerViewControllerDelegate
 
 
 // MARK: - UIImagePicker Delegate
-extension iOSMediaPickerService: UIImagePickerControllerDelegate, UINavigationControllerDelegate
+extension Sui_MediaPickerService: UIImagePickerControllerDelegate, UINavigationControllerDelegate
 {
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController)
     {

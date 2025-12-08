@@ -3,9 +3,10 @@ import SharedAppCore
 
 struct RootView: View
 {
-    @StateObject private var nav = SuiPageNavigationService.shared
+    @StateObject private var nav = Sui_PageNavigationService.shared
     @StateObject private var snackbarManager = SnackbarManager.shared
     @StateObject private var busyIndicatorManager = BusyIndicatorManager.shared
+    @StateObject private var alertService = Sui_AlertDialogService.shared
     
     var body: some View
     {
@@ -17,26 +18,35 @@ struct RootView: View
                 // Apple’s design expects a statically defined root view, where Stack[0] is the second PageView.
                 // We don’t follow this pattern — instead, we treat Stack[0] as our dynamic root view.
                 Color.black // The true static root is just a placeholder black view. Our real root view comes from Stack[0].
-                    .navigationDestination(for: PageItem.self) { item in
-                        let isRoot = item.id == nav.Stack.first?.id
+                    .navigationDestination(for: PageItem.self)
+                    { item in
+                        
+                        //let isRoot = item.id == nav.Stack.first?.id
                         
                         nav.GetViewForItem(item)
-                            .navigationBarBackButtonHidden(isRoot) //hide navigation bar for root page, as our root is still second page and iOS will show back button for it
+                            .background(Color(ColorConstants.BgColor.ToUIColor()))
+                            //.navigationBarBackButtonHidden(isRoot) //hide navigation bar for root page, as our root is still second page and iOS will show back button for it
+                            .navigationBarBackButtonHidden(true) //hide navigation bar for all pages
+                            
                     }
             }
+            .alertIfNeeded(alertService, $alertService.isShowAlert) //show alert if IAlertDialogService requires
+            .confirmationDialogIfNeeded(alertService, $alertService.isShowActionSheet) //show actionSheet if IAlertDialogService requires
+            .hideKeyboardOnTap() //hide keyboard when tap anywhere on page
             
             // Layer 2 — Snackbar overlay
-            if snackbarManager.isShowing, let msg = snackbarManager.message
+            if snackbarManager.isShowing
             {
-                SnackbarView()
+                Sui_SnackbarView()
             }
             
             // Layer 2 — BusyIndicator overlay
             if busyIndicatorManager.isShowing
             {
-                BusyIndicatorView()
+                Sui_BusyIndicatorView()
             }
         }
+        
     }
 }
 

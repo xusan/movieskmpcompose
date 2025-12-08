@@ -22,7 +22,8 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun ThirdPage(vm: ThirdViewModel) {
+fun ThirdPage(vm: ThirdViewModel)
+{
     Column(Modifier
         .fillMaxSize()
         .background(Color.Yellow), Arrangement.Center, Alignment.CenterHorizontally)
@@ -71,6 +72,7 @@ fun btnBack_Clicked3(vm: ThirdViewModel, scope: CoroutineScope)
 
 @Preview
 @Composable
-fun ThirdPage_Preview() {
+fun ThirdPage_Preview()
+{
     ThirdPage(vm = ThirdViewModel(PageInjectedServices())) // or fake VM
 }

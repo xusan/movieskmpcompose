@@ -9,10 +9,10 @@ import Foundation
 
 extension String
 {
-    func propertyName() -> String
-    {
-       components(separatedBy: ".").last ?? self
-    }
+//    func propertyName() -> String
+//    {
+//       components(separatedBy: ".").last ?? self
+//    }
     
     func isLocalFilePath() -> Bool
     {

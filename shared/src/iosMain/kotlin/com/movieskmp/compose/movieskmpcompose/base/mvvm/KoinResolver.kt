@@ -2,6 +2,7 @@ import com.base.abstractions.Diagnostic.ILoggingService
 import com.base.abstractions.Essentials.IDirectoryService
 import com.base.abstractions.Essentials.IPreferences
 import com.base.abstractions.Platform.IZipService
+import com.base.abstractions.UI.IAlertDialogService
 import com.base.mvvm.Navigation.IPageNavigationService
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -22,6 +23,9 @@ class KoinResolver : KoinComponent
 
     @Throws(Throwable::class)
     fun GetZipService(): IZipService = SafeCall { get() }
+
+    @Throws(Throwable::class)
+    fun GetAlertDialogService(): IAlertDialogService = SafeCall { get() }
 
 
     //if it crash then it will print the whole stacktrace, error details in ouput console

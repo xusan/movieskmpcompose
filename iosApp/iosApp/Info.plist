@@ -4,5 +4,14 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+    <key>NSCameraUsageDescription</key>
+    <string>This allows Legit to send your pictures and video directly from your camera.</string>
+    <key>UIAppFonts</key>
+    <array>
+        <string>Sen-Bold.ttf</string>
+        <string>Sen-Medium.ttf</string>
+        <string>Sen-Regular.ttf</string>
+        <string>Sen-SemiBold.ttf</string>
+    </array>
 </dict>
 </plist>

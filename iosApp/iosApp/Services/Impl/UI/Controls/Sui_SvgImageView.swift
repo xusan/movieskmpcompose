@@ -1,7 +1,7 @@
 import SwiftUI
 import SVGKit
 
-struct SvgImageView: UIViewRepresentable
+struct Sui_SvgImageView: UIViewRepresentable
 {
     let svgFileName: String     // SVG filename
 

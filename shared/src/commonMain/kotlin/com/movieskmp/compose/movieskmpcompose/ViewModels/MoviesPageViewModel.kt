@@ -201,7 +201,7 @@ class MoviesPageViewModel(injectedService: PageInjectedServices) : AppPageViewMo
                 val confirmed = Services.AlertDialogService.ConfirmAlert("Confirm Action", "Are you sure want to log out?", "Yes", "No")
                 if (confirmed)
                 {
-                    Navigate("../${LoginPageViewModel::class.simpleName}", NavigationParameters
+                    Navigate("/${LoginPageViewModel::class.simpleName}", NavigationParameters
                     {
                         add(LoginPageViewModel.LogoutRequest, true)
                     })

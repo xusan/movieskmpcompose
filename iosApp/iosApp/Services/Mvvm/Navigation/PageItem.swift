@@ -6,13 +6,13 @@ struct PageItem: Hashable, Identifiable
 {
     let id: UUID
     let VmName: String
-    let Vm: PageViewModel
+    let VmObs: ViewModelObservable
     
-    init(_ vmName: String, _ vm: PageViewModel)
+    init(_ vmName: String, _ vmObs: ViewModelObservable)
     {
         self.id = UUID()
         self.VmName = vmName
-        self.Vm = vm
+        self.VmObs = vmObs
     }
 
     func hash(into hasher: inout Hasher) { hasher.combine(id) }

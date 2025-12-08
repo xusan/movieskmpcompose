@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct SvgCircleButton: View
+struct Sui_SvgCircleButton: View
 {
     let svgFileName: String
     let action: () -> Void
@@ -8,12 +8,11 @@ struct SvgCircleButton: View
     var body: some View
     {
         Button(action: action) {
-            SvgImageView(svgFileName: svgFileName)
+            Sui_SvgImageView(svgFileName: svgFileName)
                 .frame(width: 26, height: 26)  // icon size
                 .padding(12)                   // padding inside circle
         }
         .background(Color.white)
-        .clipShape(Circle())
-        .shadow(radius: 2)
+        .clipShape(Circle())        
     }
 }

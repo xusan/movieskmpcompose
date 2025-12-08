@@ -4,7 +4,7 @@ class Bootstrap
 {    
     func NavigateToPage(_ navigationService: IPageNavigationService)
     {
-        let nav = navigationService as! SuiPageNavigationService
+        let nav = navigationService as! Sui_PageNavigationService
         let preferences = try! KoinResolver().GetPreferences()
         let isLoggedIn = preferences.Get(LoginPageViewModel.companion.IsLoggedIn, default: false)
 
@@ -41,25 +41,20 @@ class Bootstrap
             emailServiceFactory: nil,
             shareFactory: { iOSShareImplementation() },
             zipServiceFactory: { iOSZipService() },
-            snackbarFactory: { iOSSnackbarBarService() },
-            alertDialogFactory: { iOSAlertDialogService() },
-            mediaPickerFactory: { iOSMediaPickerService() },
+            snackbarFactory: { Sui_SnackbarBarService() },
+            alertDialogFactory: { Sui_AlertDialogService.shared },
+            mediaPickerFactory: { Sui_MediaPickerService() },
             outputFactory: { iOSConsoleOutput() },
             fileLoggerFactory: { iOSFileLogger() },
             errorTracking : { errorTrackingService }
         )
 
         //Register pages, viewmodels mapping
-        let services = PageInjectedServices()
-//        NavRegistrar.RegisterPageForNavigation({ LoginPage() }, { LoginPageViewModel(injectedService: services) })
-//        NavRegistrar.RegisterPageForNavigation({ MoviesPage() }, { MoviesPageViewModel(injectedService: services) })
-//        NavRegistrar.RegisterPageForNavigation({ MovieDetailPage() }, { MovieDetailPageViewModel(injectedService: services) })
-//        NavRegistrar.RegisterPageForNavigation({ AddEditMoviePage() }, { AddEditMoviePageViewModel(injectedService: services) })
-                
+        let services = PageInjectedServices()                
         NavRegistrar.RegisterPageForNavigation({ LoginPage() }, { LoginPageViewModel(injectedService: services) })
-        NavRegistrar.RegisterPageForNavigation({ HomePage() }, { MoviesPageViewModel(injectedService: services) })
-        NavRegistrar.RegisterPageForNavigation({ DetailsPage() }, { MovieDetailPageViewModel(injectedService: services) })
-        NavRegistrar.RegisterPageForNavigation({ AddEditPage() }, { AddEditMoviePageViewModel(injectedService: services) })
+        NavRegistrar.RegisterPageForNavigation({ MoviesPage() }, { MoviesPageViewModel(injectedService: services) })
+        NavRegistrar.RegisterPageForNavigation({ MovieDetailPage() }, { MovieDetailPageViewModel(injectedService: services) })
+        NavRegistrar.RegisterPageForNavigation({ AddEditMoviePage() }, { AddEditMoviePageViewModel(injectedService: services) })
     }
 }
 
@@ -87,3 +82,4 @@ typealias MediaFile = SharedAppCore.MediaFile
 typealias MediaSource = SharedAppCore.MediaSource
 typealias IMediaPickerService = SharedAppCore.IMediaPickerService
 public typealias XfColor = SharedAppCore.XfColor
+typealias MovieItemViewModel = SharedAppCore.MovieItemViewModel

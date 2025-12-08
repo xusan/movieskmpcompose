@@ -1,6 +1,6 @@
 import SharedAppCore
 
-class iOSSnackbarBarService: ISnackbarService
+class Sui_SnackbarBarService: ISnackbarService
 {
     let PopupShowed = Event<SeverityType>()
     var pageNavigationService: IPageNavigationService!
