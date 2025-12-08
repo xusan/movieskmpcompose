@@ -57,15 +57,13 @@ internal class AppLoggingService : KoinComponent, ILoggingService
 
     private fun TrackInternal(ex: Throwable, handled: Boolean, data: Map<String, String>? = null)
     {
-        SafeCall()
-        {
+        SafeCall() {
             LastError = ex
             LogError(ex, "", handled)
 
             if (handled)
             {
-                GlobalScope.launch()
-                {
+                GlobalScope.launch() {
                     try
                     {
                         errorTrackingService.TrackError(ex, null)
@@ -81,8 +79,7 @@ internal class AppLoggingService : KoinComponent, ILoggingService
 
     override fun Log(message: String)
     {
-        SafeCall()
-        {
+        SafeCall() {
             RowNumber++
             val tag = GetLogAppTag(AppLaunchCount, RowNumber)
             val formatted = "$tag INFO:$message"
@@ -93,8 +90,7 @@ internal class AppLoggingService : KoinComponent, ILoggingService
 
     override fun LogWarning(message: String)
     {
-        SafeCall()
-        {
+        SafeCall() {
             RowNumber++
             val tag = GetLogAppTag(AppLaunchCount, RowNumber)
             val formatted = "$tag WARNING:$message"
@@ -105,18 +101,14 @@ internal class AppLoggingService : KoinComponent, ILoggingService
 
     override fun LogError(ex: Throwable, message: String, handled: Boolean)
     {
-        SafeCall()
-        {
+        SafeCall() {
             RowNumber++
             val tag = GetLogAppTag(AppLaunchCount, RowNumber)
 
-            val formatted = buildString()
-            {
+            val formatted = buildString() {
                 append("$tag ERROR: ")
-                if (handled)
-                    append(HANDLED_ERROR)
-                else
-                    append(UNHANDLED_ERROR)
+                if (handled) append(HANDLED_ERROR)
+                else append(UNHANDLED_ERROR)
 
                 if (message.isNotEmpty())
                 {
@@ -138,8 +130,7 @@ internal class AppLoggingService : KoinComponent, ILoggingService
 
     override fun Header(headerMessage: String)
     {
-        SafeCall()
-        {
+        SafeCall() {
             fileLogger.Info(headerMessage)
             platformConsole.Info(headerMessage)
         }
@@ -147,8 +138,7 @@ internal class AppLoggingService : KoinComponent, ILoggingService
 
     override fun LogMethodStarted(className: String, methodName: String, args: List<Any?>?)
     {
-        SafeCall()
-        {
+        SafeCall() {
             val debugMethodName = GetMethodNameWithParameters(className, methodName, args)
             Log("$ENTER_TAG $debugMethodName")
         }
@@ -166,8 +156,7 @@ internal class AppLoggingService : KoinComponent, ILoggingService
 
     override fun LogIndicator(name: String, message: String)
     {
-        SafeCall()
-        {
+        SafeCall() {
             val msg = "********************************${INDICATOR_TAG}${name}*************************************"
             fileLogger.Info(msg)
             platformConsole.Info(msg)
@@ -187,7 +176,7 @@ internal class AppLoggingService : KoinComponent, ILoggingService
 
     override fun GetCurrentLogFileName(): String
     {
-       return fileLogger.GetCurrentLogFileName()
+        return fileLogger.GetCurrentLogFileName()
     }
 
     override suspend fun GetLastSessionLogBytes(): ByteArray?
@@ -219,10 +208,8 @@ internal class AppLoggingService : KoinComponent, ILoggingService
     private fun GetLaunchCount(): Int
     {
         var launchCount = preferences.Get("AppLaunchCount", 0)
-        if (launchCount != null)
-            launchCount += 1
-        else
-            launchCount = 0
+        if (launchCount != null) launchCount += 1
+        else launchCount = 0
 
         preferences.Set("AppLaunchCount", launchCount)
         return launchCount
@@ -237,13 +224,15 @@ internal class AppLoggingService : KoinComponent, ILoggingService
         val millisStr = millis.toString().padStart(3, '0')
 
         val timeStr = "${time.hour.toString().padStart(2, '0')}:${
-            time.minute.toString().padStart(2, '0')}:${
-            time.second.toString().padStart(2, '0')}.$millisStr"
+            time.minute.toString().padStart(2, '0')
+        }:${
+            time.second.toString().padStart(2, '0')
+        }.$millisStr"
 
         return "S($appLaunchCount)_R($rowNumber)_D($timeStr)"
     }
 
-    private fun SafeCall(action: ()-> Unit)
+    private fun SafeCall(action: () -> Unit)
     {
         try
         {
@@ -278,12 +267,11 @@ internal class AppLoggingService : KoinComponent, ILoggingService
      * - Collections are truncated to 10 items for readability.
      * - Safe for use in Kotlin Multiplatform (no reflection or JVM-only APIs).
      */
-    private fun GetMethodNameWithParameters(className: String, funcName: String?, args: List<Any?>? = null) : String
+    private fun GetMethodNameWithParameters(className: String, funcName: String?, args: List<Any?>? = null): String
     {
         //val className = this::class.simpleName
         val itemsCount = 10;
-        val argsString = args?.joinToString(", ")
-        { arg ->
+        val argsString = args?.joinToString(", ") { arg ->
             when (arg)
             {
                 null -> "null"
@@ -306,10 +294,7 @@ internal class AppLoggingService : KoinComponent, ILoggingService
                     val valueString = when (arg)
                     {
                         // simple value-like types → print directly
-                        is String,
-                        is Number,
-                        is Boolean,
-                        is Char -> arg.toString()
+                        is String, is Number, is Boolean, is Char -> arg.toString()
 
                         // lists or arrays are handled above, so here we assume it’s an object
                         else ->
@@ -321,7 +306,8 @@ internal class AppLoggingService : KoinComponent, ILoggingService
                             if (str.startsWith(defaultToStringPrefix) && str.contains("@"))
                             {
                                 "..." // looks like default toString()
-                            } else
+                            }
+                            else
                             {
                                 str // likely overridden
                             }

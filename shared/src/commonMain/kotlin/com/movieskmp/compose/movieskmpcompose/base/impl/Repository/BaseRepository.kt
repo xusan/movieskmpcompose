@@ -12,8 +12,7 @@ import io.realm.kotlin.types.RealmObject
 import org.koin.core.component.inject
 import kotlin.reflect.KClass
 
-open class BaseRepository<TEntity, Tb>(private val tableClass: KClass<Tb>) : LoggableService(), IRepository<TEntity>
-where TEntity : IEntity, Tb : RealmObject, Tb: ITable
+open class BaseRepository<TEntity, Tb>(private val tableClass: KClass<Tb>) : LoggableService(), IRepository<TEntity> where TEntity : IEntity, Tb : RealmObject, Tb : ITable
 {
     protected var realm: Realm? = null
     protected val mapper: IRepoMapper<TEntity, Tb> by inject()
@@ -26,11 +25,9 @@ where TEntity : IEntity, Tb : RealmObject, Tb: ITable
         EnsureInitalized()
 
         var results: List<Tb>? = null;
-        if(count > 0)
+        if (count > 0)
         {
-            results = realm!!.query(tableClass, "id > $0 SORT(id ASC)", skip)
-                .limit(count)
-                .find()
+            results = realm!!.query(tableClass, "id > $0 SORT(id ASC)", skip).limit(count).find()
         }
         else
         {
@@ -45,14 +42,11 @@ where TEntity : IEntity, Tb : RealmObject, Tb: ITable
         LogMethodStart(::AddAllAsync.name, entities)
         EnsureInitalized()
         var lastId = -1;
-        realm!!.write()
-        {
-            entities.forEach{ entity ->
+        realm!!.write() {
+            entities.forEach { entity ->
 
-                if(lastId != -1)
-                    lastId ++;
-                else
-                    lastId = GetNextId();
+                if (lastId != -1) lastId++;
+                else lastId = GetNextId();
                 entity.Id = lastId
 
                 val tbRow = mapper.ToTb(entity);
@@ -67,7 +61,7 @@ where TEntity : IEntity, Tb : RealmObject, Tb: ITable
         LogMethodStart(::FindById.name, id)
         EnsureInitalized()
         val tb = realm!!.query(tableClass, "Id == $0", id).first().find()
-        if(tb != null)
+        if (tb != null)
         {
             val entity = mapper.ToEntity(tb)
             return entity;
@@ -75,7 +69,7 @@ where TEntity : IEntity, Tb : RealmObject, Tb: ITable
         return null;
     }
 
-    override suspend fun AddAsync(entity: TEntity) : Int
+    override suspend fun AddAsync(entity: TEntity): Int
     {
         LogMethodStart(::AddAsync.name, entity)
         EnsureInitalized()
@@ -87,7 +81,7 @@ where TEntity : IEntity, Tb : RealmObject, Tb: ITable
     }
 
     /** Update via mapping */
-    override suspend fun UpdateAsync(entity: TEntity) : Int
+    override suspend fun UpdateAsync(entity: TEntity): Int
     {
         LogMethodStart(::UpdateAsync.name, entity)
         EnsureInitalized()
@@ -102,11 +96,11 @@ where TEntity : IEntity, Tb : RealmObject, Tb: ITable
             }
         }
 
-        return if(hasValue) 1 else 0;
+        return if (hasValue) 1 else 0;
     }
 
     /** Delete by id */
-    override suspend fun RemoveAsync(entity: TEntity) : Int
+    override suspend fun RemoveAsync(entity: TEntity): Int
     {
         LogMethodStart(::RemoveAsync.name, entity)
         EnsureInitalized()
@@ -120,7 +114,7 @@ where TEntity : IEntity, Tb : RealmObject, Tb: ITable
                 delete(tb)
             }
         }
-        return if(hasValue) 1 else 0;
+        return if (hasValue) 1 else 0;
     }
 
     override suspend fun ClearAsync(reason: String): Int
@@ -152,7 +146,7 @@ where TEntity : IEntity, Tb : RealmObject, Tb: ITable
 
     }
 
-    private fun IsDbClosed() : Boolean
+    private fun IsDbClosed(): Boolean
     {
         try
         {
@@ -164,10 +158,10 @@ where TEntity : IEntity, Tb : RealmObject, Tb: ITable
         }
     }
 
-    private fun GetNextId() : Int
+    private fun GetNextId(): Int
     {
         val maxId = realm!!.query(tableClass).max("Id", Int::class).find() ?: 0
-        if(maxId == 0)
+        if (maxId == 0)
         {
             return 1;
         }

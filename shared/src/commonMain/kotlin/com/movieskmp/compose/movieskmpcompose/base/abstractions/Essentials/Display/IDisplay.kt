@@ -8,6 +8,6 @@ import kotlin.native.ObjCName
 interface IDisplay
 {
     fun GetDisplayInfo(): DisplayInfo
-    fun GetDisplayKeepOnValue() : Boolean
+    fun GetDisplayKeepOnValue(): Boolean
     fun SetDisplayKeepOnValue(keepOn: Boolean)
 }

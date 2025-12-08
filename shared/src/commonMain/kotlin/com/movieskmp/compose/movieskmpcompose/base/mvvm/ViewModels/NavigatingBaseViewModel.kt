@@ -19,7 +19,7 @@ open class NavigatingBaseViewModel(val injectedServices: InjectedService) : Base
         LogVirtualBaseMethod(::OnNavigatedTo.name)
     }
 
-    fun GetCurrentPageViewModel() : NavigatingBaseViewModel
+    fun GetCurrentPageViewModel(): NavigatingBaseViewModel
     {
         LogVirtualBaseMethod(::GetCurrentPageViewModel.name)
         return this.injectedServices.NavigationService.GetCurrentPageModel() as NavigatingBaseViewModel;
@@ -27,8 +27,8 @@ open class NavigatingBaseViewModel(val injectedServices: InjectedService) : Base
 
     suspend fun Navigate(name: String, parameters: INavigationParameters? = null, useModalNavigation: Boolean = false, animated: Boolean = true, wrapIntoNav: Boolean = false)
     {
-        LogVirtualBaseMethod(::Navigate.name+ "(name=$name, ...)")
-        this.injectedServices.NavigationService.Navigate(name,parameters,useModalNavigation,animated,wrapIntoNav)
+        LogVirtualBaseMethod(::Navigate.name + "(name=$name, ...)")
+        this.injectedServices.NavigationService.Navigate(name, parameters, useModalNavigation, animated, wrapIntoNav)
     }
 
     suspend fun NavigateToRoot(parameters: INavigationParameters? = null)
@@ -53,7 +53,7 @@ open class NavigatingBaseViewModel(val injectedServices: InjectedService) : Base
     {
         LogVirtualBaseMethod(::NavigateAndMakeRoot.name + "(name = $name, ...)")
         val newRoot = "/NavigationPage/$name";
-        this.Navigate(name, parameters,useModalNavigation, animated);
+        this.Navigate(name, parameters, useModalNavigation, animated);
     }
 
     suspend fun NavigateBack(parameters: INavigationParameters? = null)
@@ -64,9 +64,8 @@ open class NavigatingBaseViewModel(val injectedServices: InjectedService) : Base
 
     suspend fun BackToRootAndNavigate(name: String, parameters: INavigationParameters? = null)
     {
-        LogVirtualBaseMethod(::BackToRootAndNavigate.name+"(name = $name, ...)")
-        val navStack = injectedServices.NavigationService.GetNavStackModels()
-            .map { it.toString().substringAfterLast('.') }
+        LogVirtualBaseMethod(::BackToRootAndNavigate.name + "(name = $name, ...)")
+        val navStack = injectedServices.NavigationService.GetNavStackModels().map { it.toString().substringAfterLast('.') }
 
         val currentNavStack = if (navStack.size > 1)
         {
@@ -88,7 +87,7 @@ open class NavigatingBaseViewModel(val injectedServices: InjectedService) : Base
         Navigate(resultUri, parameters)
     }
 
-    protected fun <T> GetParameter(parameters: INavigationParameters, key: String) : T?
+    protected fun <T> GetParameter(parameters: INavigationParameters, key: String): T?
     {
         LogVirtualBaseMethod("GetParameter(key = $key)")
         if (parameters.ContainsKey(key))
@@ -101,7 +100,7 @@ open class NavigatingBaseViewModel(val injectedServices: InjectedService) : Base
         }
     }
 
-    protected fun <T> GetParameter(parameters: INavigationParameters, key: String, setter: (T?)-> Unit)
+    protected fun <T> GetParameter(parameters: INavigationParameters, key: String, setter: (T?) -> Unit)
     {
         LogVirtualBaseMethod("GetParameter(key = $key, setter())")
         if (parameters.ContainsKey(key))

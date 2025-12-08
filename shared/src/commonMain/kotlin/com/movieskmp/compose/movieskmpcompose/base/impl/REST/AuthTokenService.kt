@@ -36,7 +36,7 @@ internal class AuthTokenService : LoggableService(), IAuthTokenService
 
     override suspend fun EnsureAuthValid()
     {
-        if(authToken == null)
+        if (authToken == null)
         {
             authToken = GetAuthTokenDetails()
         }

@@ -18,8 +18,5 @@ interface ISnackbarService
 @ObjCName(name = "SeverityType", exact = true)
 enum class SeverityType
 {
-    Info,
-    Success,
-    Warning,
-    Error
+    Info, Success, Warning, Error
 }

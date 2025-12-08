@@ -18,19 +18,15 @@ class KmpTimer(private val Interval: Duration)
     val IsEnabled: Boolean
         get()
         {
-            if(job == null)
-                return false;
-            else
-                return job!!.isActive
+            if (job == null) return false;
+            else return job!!.isActive
         }
 
     fun Start()
     {
-        if (IsEnabled == true)
-            return
+        if (IsEnabled == true) return
 
-        job = coroutineScope.launch()
-        {
+        job = coroutineScope.launch() {
             while (isActive)
             {
                 delay(Interval)

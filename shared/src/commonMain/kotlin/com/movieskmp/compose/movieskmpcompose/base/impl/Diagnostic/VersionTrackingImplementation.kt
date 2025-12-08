@@ -6,7 +6,7 @@ import com.base.abstractions.Essentials.IVersionTracking
 import org.koin.core.component.inject
 import kotlin.getValue
 
-internal class VersionTrackingImplementation: LoggableService(), IVersionTracking
+internal class VersionTrackingImplementation : LoggableService(), IVersionTracking
 {
     private val preferences: IPreferences by inject()
     private val appInfo: IAppInfo by inject()
@@ -31,8 +31,7 @@ internal class VersionTrackingImplementation: LoggableService(), IVersionTrackin
     override fun Track()
     {
         LogMethodStart(::Track.name)
-        if (::versionTrail.isInitialized)
-            return
+        if (::versionTrail.isInitialized) return
 
         InitVersionTracking()
     }
@@ -45,17 +44,11 @@ internal class VersionTrackingImplementation: LoggableService(), IVersionTrackin
         IsFirstLaunchEver = !preferences.ContainsKey(versionsKey, sharedName) || !preferences.ContainsKey(buildsKey, sharedName)
         if (IsFirstLaunchEver)
         {
-            versionTrail = mutableMapOf(
-                versionsKey to mutableListOf(),
-                buildsKey to mutableListOf()
-            )
+            versionTrail = mutableMapOf(versionsKey to mutableListOf(), buildsKey to mutableListOf())
         }
         else
         {
-            versionTrail = mutableMapOf(
-                versionsKey to ReadHistory(versionsKey).toMutableList(),
-                buildsKey to ReadHistory(buildsKey).toMutableList()
-            )
+            versionTrail = mutableMapOf(versionsKey to ReadHistory(versionsKey).toMutableList(), buildsKey to ReadHistory(buildsKey).toMutableList())
         }
 
         IsFirstLaunchForCurrentVersion = !versionTrail[versionsKey]!!.contains(CurrentVersion) || CurrentVersion != LastInstalledVersion
@@ -114,12 +107,14 @@ internal class VersionTrackingImplementation: LoggableService(), IVersionTrackin
     override val BuildHistory: List<String>
         get() = versionTrail[buildsKey]?.toList() ?: emptyList()
 
-    override fun IsFirstLaunchForVersion(version: String): Boolean {
+    override fun IsFirstLaunchForVersion(version: String): Boolean
+    {
         LogMethodStart(::IsFirstLaunchForVersion.name, version)
         return CurrentVersion == version && IsFirstLaunchForCurrentVersion
     }
 
-    override fun IsFirstLaunchForBuild(build: String): Boolean {
+    override fun IsFirstLaunchForBuild(build: String): Boolean
+    {
         LogMethodStart(::IsFirstLaunchForBuild.name, build)
         return CurrentBuild == build && IsFirstLaunchForCurrentBuild
     }
@@ -146,12 +141,14 @@ internal class VersionTrackingImplementation: LoggableService(), IVersionTrackin
         return sb.toString()
     }
 
-    private fun ReadHistory(key: String): List<String> {
+    private fun ReadHistory(key: String): List<String>
+    {
         LogMethodStart(::ReadHistory.name, key)
         return preferences.Get<String?>(key, null, sharedName)?.split('|')?.filter { it.isNotEmpty() } ?: emptyList()
     }
 
-    private fun WriteHistory(key: String, history: List<String>) {
+    private fun WriteHistory(key: String, history: List<String>)
+    {
         LogMethodStart(::WriteHistory.name, key, history)
         preferences.Set(key, history.joinToString("|"), sharedName)
     }

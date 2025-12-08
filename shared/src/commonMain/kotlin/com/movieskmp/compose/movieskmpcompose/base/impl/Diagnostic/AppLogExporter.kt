@@ -22,7 +22,6 @@ internal class AppLogExporter : LoggableService(), IAppLogExporter
     private val KyChat_Logs = "KyChat_Logs"
 
 
-
     override suspend fun ShareLogs(): LogSharingResult
     {
         LogMethodStart(::ShareLogs.name)
@@ -63,25 +62,30 @@ internal class AppLogExporter : LoggableService(), IAppLogExporter
         }
     }
 
-    fun removeOldFilesFromCache() {
+    fun removeOldFilesFromCache()
+    {
         LogMethodStart(::removeOldFilesFromCache.name)
-        try {
+        try
+        {
             val cacheDir = directoryService.GetCacheDir().toPath()
 
             // List all files in the cache directory
-            val files = FileSystem.SYSTEM.list(cacheDir)
-                .filter { it.name.contains(KyChat_Logs) }
+            val files = FileSystem.SYSTEM.list(cacheDir).filter { it.name.contains(KyChat_Logs) }
 
             // Delete each matching file
-            for (file in files) {
+            for (file in files)
+            {
                 FileSystem.SYSTEM.delete(file)
             }
-        } catch (e: Exception) {
+        }
+        catch (e: Exception)
+        {
             loggingService.TrackError(e)
         }
     }
 
-    fun getUtcDateString(): String {
+    fun getUtcDateString(): String
+    {
         LogMethodStart(::getUtcDateString.name)
         val now = Clock.System.now()
         val utcDateTime = now.toLocalDateTime(TimeZone.UTC)

@@ -16,21 +16,15 @@ object SnackbarColors
 
     fun SeverityType.GetBackgroundColor(): XfColor
     {
-        if (this == SeverityType.Info)
-            return InfoColor
-        else if (this == SeverityType.Error || this == SeverityType.Warning)
-            return ErrorColor
-        else
-            return SuccessColor
+        if (this == SeverityType.Info) return InfoColor
+        else if (this == SeverityType.Error || this == SeverityType.Warning) return ErrorColor
+        else return SuccessColor
     }
 
     fun SeverityType.GetTextColor(): XfColor
     {
-        if (this == SeverityType.Info)
-            return InfoTextColor
-        else if (this == SeverityType.Error || this == SeverityType.Warning)
-            return ErrorTextColor
-        else
-            return SuccessTextColor
+        if (this == SeverityType.Info) return InfoTextColor
+        else if (this == SeverityType.Error || this == SeverityType.Warning) return ErrorTextColor
+        else return SuccessTextColor
     }
 }

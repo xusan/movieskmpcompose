@@ -7,27 +7,12 @@ import kotlin.native.ObjCName
 
 @OptIn(ExperimentalObjCName::class)
 @ObjCName(name = "IResizeImageService", exact = true)
-interface IResizeImageService {
+interface IResizeImageService
+{
 
-    fun ResizeImage(
-        imageData: ByteArray,
-        originalContentType: String,
-        maxWidth: Int,
-        maxHeight: Int,
-        quality: Float = 97f,
-        rotation: Int = 0,
-        shouldSetUniqueName: Boolean = false
-    ): ImageResizeResult
+    fun ResizeImage(imageData: ByteArray, originalContentType: String, maxWidth: Int, maxHeight: Int, quality: Float = 97f, rotation: Int = 0, shouldSetUniqueName: Boolean = false): ImageResizeResult
 
-    fun ResizeNativeImage(
-        image: Any,
-        originalContentType: String,
-        maxWidth: Int,
-        maxHeight: Int,
-        rotation: Int = 0,
-        quality: Float = 97f,
-        shouldSetUniqueName: Boolean = false
-    ): ImageResizeResult
+    fun ResizeNativeImage(image: Any, originalContentType: String, maxWidth: Int, maxHeight: Int, rotation: Int = 0, quality: Float = 97f, shouldSetUniqueName: Boolean = false): ImageResizeResult
 
     fun GetRequiredRotation(fileResult: Any): Int
     fun GetRequiredRotation(filePath: String): Int
@@ -35,13 +20,7 @@ interface IResizeImageService {
 
 @OptIn(ExperimentalObjCName::class)
 @ObjCName(name = "ImageResizeResult", exact = true)
-data class ImageResizeResult(
-    var IsResized: Boolean = true,
-    var NativeImage: Any? = null,
-    var Image: ByteArray? = null,
-    var ContentType: String = "",
-    var ImageSize: Size = Size.Zero,
-    var FilePath: String? = null)
+data class ImageResizeResult(var IsResized: Boolean = true, var NativeImage: Any? = null, var Image: ByteArray? = null, var ContentType: String = "", var ImageSize: Size = Size.Zero, var FilePath: String? = null)
 {
     val FileExtension: String
         get() = if (ContentType.contains("png", ignoreCase = true)) ".png" else ".jpg"

@@ -1,5 +1,6 @@
 package com.movieskmp.compose.movieskmpcompose
 
+import android.annotation.SuppressLint
 import androidx.activity.ComponentActivity
 import com.app.shared.Base.PageInjectedServices
 import com.app.shared.ViewModels.*
@@ -64,13 +65,13 @@ class Bootstrap : KoinComponent
         val preference = get<IPreferences>()
         val isloggedIn = preference.Get(LoginPageViewModel.IsLoggedIn, false);
 
-//        if (isloggedIn!!)
-//        {
-//            return SecondViewModel::class.simpleName!!
-//        }
-//        else
-//        {
+        if (isloggedIn)
+        {
+            return MoviesPageViewModel::class.simpleName!!
+        }
+        else
+        {
             return LoginPageViewModel::class.simpleName!!
-        //}
+        }
     }
 }
