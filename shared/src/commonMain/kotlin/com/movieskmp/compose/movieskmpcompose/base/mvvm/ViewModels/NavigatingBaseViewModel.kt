@@ -52,8 +52,8 @@ open class NavigatingBaseViewModel(val injectedServices: InjectedService) : Base
     suspend fun NavigateAndMakeRoot(name: String, parameters: INavigationParameters? = null, useModalNavigation: Boolean = false, animated: Boolean = true)
     {
         LogVirtualBaseMethod(::NavigateAndMakeRoot.name + "(name = $name, ...)")
-        val newRoot = "/NavigationPage/$name";
-        this.Navigate(name, parameters,useModalNavigation, animated);
+        val newRoot = "/$name";
+        this.Navigate(newRoot, parameters,useModalNavigation, animated);
     }
 
     suspend fun NavigateBack(parameters: INavigationParameters? = null)
