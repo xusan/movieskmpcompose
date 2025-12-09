@@ -45,8 +45,7 @@ open class RestService : LoggableService()
     suspend inline fun <reified T> Get(restRequest: RestRequest): T
     {
         LogMethodStart("Get", restRequest)
-        return WithApiErrorHandling()
-        {
+        return WithApiErrorHandling() {
             MakeWebRequest(RestMethod.GET, restRequest)
         }
     }
@@ -54,8 +53,7 @@ open class RestService : LoggableService()
     suspend inline fun <reified T> Post(restRequest: RestRequest): T
     {
         LogMethodStart("Post", restRequest)
-        return WithApiErrorHandling()
-        {
+        return WithApiErrorHandling() {
             MakeWebRequest(RestMethod.POST, restRequest)
         }
     }
@@ -63,8 +61,7 @@ open class RestService : LoggableService()
     suspend inline fun <reified T> Put(restRequest: RestRequest)
     {
         LogMethodStart("Put", restRequest)
-        return WithApiErrorHandling()
-        {
+        return WithApiErrorHandling() {
             MakeWebRequest<Unit>(RestMethod.PUT, restRequest)
         }
     }
@@ -72,8 +69,7 @@ open class RestService : LoggableService()
     suspend inline fun <reified T> Delete(restRequest: RestRequest): Any
     {
         LogMethodStart("Delete", restRequest)
-        return WithApiErrorHandling()
-        {
+        return WithApiErrorHandling() {
             MakeWebRequest<Any>(RestMethod.DELETE, restRequest)
         }
     }
@@ -101,14 +97,12 @@ open class RestService : LoggableService()
             priority = restRequest.RequestPriority;
             timeoutType = restRequest.RequestTimeOut;
             parentList = queueList;
-            RequestAction =
-            {
+            RequestAction = {
                 val fullUrl = "${constants.ServerUrlHost}${restRequest.ApiEndpoint}"
                 val token = authTokenService.GetToken()
-                val jsonBody = restRequest.RequestBody?.let { jsonSerializer.encodeToString(it)}
+                val jsonBody = restRequest.RequestBody?.let { jsonSerializer.encodeToString(it) }
 
-                val httpRequest = RestClientHttpRequest().apply()
-                {
+                val httpRequest = RestClientHttpRequest().apply() {
                     Url = fullUrl
                     RequestMethod = method
                     JsonBody = jsonBody
@@ -116,11 +110,8 @@ open class RestService : LoggableService()
                 }
 
                 //log request start
-                val requestSummary =
-                    if (!httpRequest.JsonBody.isNullOrEmpty())
-                        "DoHttpRequest(${httpRequest.RequestMethod}, ${httpRequest.Url}, ${httpRequest.JsonBody})"
-                    else
-                        "DoHttpRequest(${httpRequest.RequestMethod}, ${httpRequest.Url})"
+                val requestSummary = if (!httpRequest.JsonBody.isNullOrEmpty()) "DoHttpRequest(${httpRequest.RequestMethod}, ${httpRequest.Url}, ${httpRequest.JsonBody})"
+                else "DoHttpRequest(${httpRequest.RequestMethod}, ${httpRequest.Url})"
                 loggingService.LogMethodStarted(requestSummary)
 
                 val responseContent = restClient.DoHttpRequest(method, httpRequest)
@@ -230,26 +221,20 @@ open class RestService : LoggableService()
 
     private fun Log(message: String) = loggingService.Log("$tag$message")
 
-    private fun HideSensitiveData(data: String): String {
+    private fun HideSensitiveData(data: String): String
+    {
         if (data.contains("access_token"))
         {
             return if (true)//PlatformUtils.isDebug)
             {
                 data
-            } else
+            }
+            else
             {
                 try
                 {
                     val json = Json.parseToJsonElement(data).jsonObject.toMutableMap()
-                    val sensitiveKeys = listOf(
-                        "access_token",
-                        "userName",
-                        "phoneNumber",
-                        "token_type",
-                        ".issued",
-                        ".expires",
-                        "expires_in"
-                    )
+                    val sensitiveKeys = listOf("access_token", "userName", "phoneNumber", "token_type", ".issued", ".expires", "expires_in")
                     sensitiveKeys.forEach { json.remove(it) }
                     jsonSerializer.encodeToString(json)
                 }

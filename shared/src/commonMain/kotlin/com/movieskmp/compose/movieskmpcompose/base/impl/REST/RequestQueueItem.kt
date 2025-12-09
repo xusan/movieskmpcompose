@@ -13,8 +13,7 @@ import kotlinx.datetime.toLocalDateTime
 
 internal open class RequestQueueItem()
 {
-    var startedAt: LocalDateTime = Clock.System.now()
-        .toLocalDateTime(TimeZone.currentSystemDefault())
+    var startedAt: LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 
     var parentList: RequestQueueList? = null;
     var Id: String = "";
@@ -38,12 +37,10 @@ internal open class RequestQueueItem()
     val isTimeOut: Boolean
         get()
         {
-            if (IsCompleted)
-                return false
+            if (IsCompleted) return false
 
             val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-            val elapsedSeconds = now.toInstant(TimeZone.currentSystemDefault()).epochSeconds -
-                    startedAt.toInstant(TimeZone.currentSystemDefault()).epochSeconds
+            val elapsedSeconds = now.toInstant(TimeZone.currentSystemDefault()).epochSeconds - startedAt.toInstant(TimeZone.currentSystemDefault()).epochSeconds
             return elapsedSeconds > TimeOut
         }
 
@@ -92,9 +89,8 @@ internal open class RequestQueueItem()
     {
         try
         {
-            parentList?.let()
-            {
-                if(it.contains(this))
+            parentList?.let() {
+                if (it.contains(this))
                 {
                     it.remove(this)
                     it.OnItemCompleted(this)

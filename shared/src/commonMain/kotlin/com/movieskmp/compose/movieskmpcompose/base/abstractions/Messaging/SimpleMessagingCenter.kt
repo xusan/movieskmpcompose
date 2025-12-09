@@ -11,17 +11,14 @@ open class SubMessage : IMessageEvent
 
     override fun Subscribe(handler: (Any?) -> Unit)
     {
-        synchronized(lock)
-        {
-            if (!handlers.contains(handler))
-                handlers.add(handler)
+        synchronized(lock) {
+            if (!handlers.contains(handler)) handlers.add(handler)
         }
     }
 
     override fun Unsubscribe(handler: (Any?) -> Unit)
     {
-        synchronized(lock)
-        {
+        synchronized(lock) {
             handlers.remove(handler)
         }
     }
@@ -41,11 +38,9 @@ class SimpleMessageCenter : IMessagesCenter
     @Suppress("UNCHECKED_CAST")
     override fun <TEvent : IMessageEvent> GetOrCreateEvent(eventClass: KClass<TEvent>, factory: () -> TEvent): TEvent
     {
-        synchronized(lock)
-        {
+        synchronized(lock) {
             val existing = events[eventClass]
-            if (existing != null)
-                return existing as TEvent
+            if (existing != null) return existing as TEvent
 
             //Instead of trying to instantiate TEvent reflectively, let the caller tell you how to create it.
             //reflection (KClass.constructors), which is not available in commonMain because:

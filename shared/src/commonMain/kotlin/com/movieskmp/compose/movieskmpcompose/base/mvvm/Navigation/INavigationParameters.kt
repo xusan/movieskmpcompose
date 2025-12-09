@@ -12,7 +12,7 @@ interface INavigationParameters
     // <typeparam name="T">The type of the parameter to get.</typeparam>
     // <param name="key">The key of the parameter to find.</param>
     // <returns>A matching value of <typeparamref name="T"/> if it exists.</returns>
-    fun <T> GetValue(key: String) : T?;
+    fun <T> GetValue(key: String): T?;
 
-    fun Count() : Int
+    fun Count(): Int
 }

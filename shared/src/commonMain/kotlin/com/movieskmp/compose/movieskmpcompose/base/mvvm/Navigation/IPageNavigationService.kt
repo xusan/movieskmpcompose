@@ -3,14 +3,9 @@ package com.base.mvvm.Navigation
 import com.base.mvvm.ViewModels.PageViewModel
 
 
-interface IPageNavigationService {
-    suspend fun Navigate(
-        name: String,
-        parameters: INavigationParameters? = null,
-        useModalNavigation: Boolean = false,
-        animated: Boolean = true,
-        wrapIntoNav: Boolean = false
-    )
+interface IPageNavigationService
+{
+    suspend fun Navigate(name: String, parameters: INavigationParameters? = null, useModalNavigation: Boolean = false, animated: Boolean = true, wrapIntoNav: Boolean = false)
 
     suspend fun NavigateToRoot(parameters: INavigationParameters? = null)
 

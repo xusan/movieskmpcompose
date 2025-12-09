@@ -20,21 +20,17 @@ class BaseCommonRegistrar
 {
     companion object
     {
-        fun RegisterTypes() : List<Module> = listOf(
-            RegisterCommon(),
-            RegisterInfrastructureService())
+        fun RegisterTypes(): List<Module> = listOf(RegisterCommon(), RegisterInfrastructureService())
 
 
-        fun RegisterCommon(): Module = module()
-        {
+        fun RegisterCommon(): Module = module() {
             single<ILoggingService> { AppLoggingService() }
             single<IMessagesCenter> { SimpleMessageCenter() }
             single<IVersionTracking> { VersionTrackingImplementation() }
             single<IAppLogExporter> { AppLogExporter() }
         }
 
-        fun RegisterInfrastructureService(): Module = module()
-        {
+        fun RegisterInfrastructureService(): Module = module() {
             single<IRestClient> { RestClient() }
             single<IMessagesCenter> { SimpleMessageCenter() }
             single { RequestQueueList(get()) }

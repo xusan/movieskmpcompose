@@ -71,7 +71,7 @@ class BaseDroidRegistrar
                 val baseCrossModule = BaseCommonRegistrar.RegisterTypes()
 
                 //merge modules
-                val list = baseDroidModule + baseCrossModule;
+                val list = baseDroidModule + baseCrossModule
                 return list;
             }
         }

@@ -47,7 +47,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-okhttp:${ktorVersion}")
                 implementation(libs.androidx.appcompat)
                 implementation("com.github.tony19:logback-android:3.0.0")
-
+                implementation(libs.androidx.runtime)
                 //browser
                 implementation("androidx.browser:browser:1.8.0")
 

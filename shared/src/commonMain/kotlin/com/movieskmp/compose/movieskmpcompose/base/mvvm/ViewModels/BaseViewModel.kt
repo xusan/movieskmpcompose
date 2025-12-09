@@ -1,4 +1,5 @@
 package com.base.mvvm.ViewModels
+
 import com.base.abstractions.BaseEvent
 import com.base.mvvm.Navigation.IDestructible
 import com.base.mvvm.Navigation.IInitialize

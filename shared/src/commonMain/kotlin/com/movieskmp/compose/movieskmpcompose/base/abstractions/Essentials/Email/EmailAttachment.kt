@@ -7,6 +7,7 @@ class EmailAttachment
 {
     var FullPath: String
     var ContentType: String
+
     /**
      * Initializes a new instance of the EmailAttachment class based off the file specified in the provided path
      * and providing an explicit MIME filetype.

@@ -5,13 +5,10 @@ import com.base.abstractions.Diagnostic.ILoggingService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-class AsyncCommand(
-    private val scope: CoroutineScope,
-    private val executeFunc: suspend (Any?) -> Unit,
-    private val canExecuteFunc: ((Any?) -> Boolean)? = null
-)
+class AsyncCommand(private val scope: CoroutineScope, private val executeFunc: suspend (Any?) -> Unit, private val canExecuteFunc: ((Any?) -> Boolean)? = null)
 {
     constructor(scope: CoroutineScope, executeFunc: suspend (Any?) -> Unit) : this(scope, executeFunc, { true })
+
     companion object
     {
         var DisableDoubleClickCheck: Boolean = false;
@@ -45,8 +42,7 @@ class AsyncCommand(
 
     fun Execute(param: Any?)
     {
-        scope.launch()
-        {
+        scope.launch() {
             ExecuteAsync(param)
         }
     }

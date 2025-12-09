@@ -47,14 +47,13 @@ open class PageViewModel(val injectedService: InjectedService) : NavigatingBaseV
     }
 
 
-
     override fun Initialize(parameters: INavigationParameters)
     {
         LogVirtualBaseMethod(::Initialize.name)
         super.Initialize(parameters)
 
-        appResumedEvent = injectedServices.EventAggregator.GetEvent<AppResumedEvent>{AppResumedEvent()};
-        appPausedEvent = injectedServices.EventAggregator.GetEvent<AppPausedEvent>{AppPausedEvent()};
+        appResumedEvent = injectedServices.EventAggregator.GetEvent<AppResumedEvent> { AppResumedEvent() };
+        appPausedEvent = injectedServices.EventAggregator.GetEvent<AppPausedEvent> { AppPausedEvent() };
         appResumedEvent.Subscribe(::ResumedFromBackground);
         appPausedEvent.Subscribe(::PausedToBackground);
     }
@@ -81,7 +80,6 @@ open class PageViewModel(val injectedService: InjectedService) : NavigatingBaseV
     {
         LogVirtualBaseMethod(::OnFirstTimeAppears.name)
     }
-
 
 
     override fun OnDisappearing()
@@ -148,8 +146,7 @@ open class PageViewModel(val injectedService: InjectedService) : NavigatingBaseV
             LogMethodStart(::ShowLoading.name)
             BusyLoading = true
             //run long-running operation in background thread
-            withContext(SharedDispatchers.Default)
-            {
+            withContext(SharedDispatchers.Default) {
                 asyncAction()
             }
             onComplete?.invoke(true)
@@ -160,15 +157,14 @@ open class PageViewModel(val injectedService: InjectedService) : NavigatingBaseV
         }
     }
 
-    suspend fun <T> ShowLoadingWithResult(asyncAction: suspend () -> T, setIsBusy: Boolean = true) : T
+    suspend fun <T> ShowLoadingWithResult(asyncAction: suspend () -> T, setIsBusy: Boolean = true): T
     {
         try
         {
             LogMethodStart("ShowLoadingWithResult")
             BusyLoading = setIsBusy
             //run long-running operation in background thread
-            val result = withContext(SharedDispatchers.Default)
-            {
+            val result = withContext(SharedDispatchers.Default) {
                 asyncAction()
             }
             return result
@@ -192,8 +188,7 @@ open class PageViewModel(val injectedService: InjectedService) : NavigatingBaseV
         {
             // TODO: implement skipCheckInternet check when services are available
             BusyLoading = setIsBusy
-            withContext(SharedDispatchers.Default)
-            {
+            withContext(SharedDispatchers.Default) {
                 backgroundActionAsync()
             }
         }
@@ -221,8 +216,7 @@ open class PageViewModel(val injectedService: InjectedService) : NavigatingBaseV
         try
         {
             BusyLoading = setIsBusy
-            val result = withContext(SharedDispatchers.Default)
-            {
+            val result = withContext(SharedDispatchers.Default) {
                 backgroundActionAsync()
             }
             return result
@@ -237,7 +231,6 @@ open class PageViewModel(val injectedService: InjectedService) : NavigatingBaseV
             BusyLoading = false
         }
     }
-
 
 
     fun HandleUIError(x: Throwable)

@@ -1,5 +1,6 @@
 package com.movieskmp.compose.movieskmpcompose
 
+import android.annotation.SuppressLint
 import androidx.activity.ComponentActivity
 import com.app.shared.Base.PageInjectedServices
 import com.app.shared.ViewModels.*
@@ -13,6 +14,7 @@ import com.base.mvvm.Navigation.NavRegistrar
 import com.example.movieskmp.AppDroidRegistrar
 import com.movieskmp.compose.movieskmpcompose.Impl.mvvm.ComposeNavRegistrar
 import com.movieskmp.compose.movieskmpcompose.Pages.FirstPage
+import com.movieskmp.compose.movieskmpcompose.Pages.LoginPage
 import com.movieskmp.compose.movieskmpcompose.Pages.SecondPage
 import com.movieskmp.compose.movieskmpcompose.Pages.ThirdPage
 import com.movieskmp.compose.movieskmpcompose.ViewModels.TestVm.FirstViewModel
@@ -41,8 +43,10 @@ class Bootstrap : KoinComponent
             single { PageInjectedServices() }
             single<IErrorTrackingService> { MainApplication.Instance.sentryErrorTracker }
             single<NavRegistrar> { pageRegistrar }
+
         }
         //register pages
+        ComposeNavRegistrar.Register({ LoginPageViewModel(get()) }, { vm-> LoginPage(vm) })
         ComposeNavRegistrar.Register({ FirstViewModel(get()) }, {vm-> FirstPage(vm) })
         ComposeNavRegistrar.Register({ SecondViewModel(get()) }, { vm-> SecondPage(vm) })
         ComposeNavRegistrar.Register({ ThirdViewModel(get()) }, { vm-> ThirdPage(vm) })
@@ -61,13 +65,13 @@ class Bootstrap : KoinComponent
         val preference = get<IPreferences>()
         val isloggedIn = preference.Get(LoginPageViewModel.IsLoggedIn, false);
 
-        if (isloggedIn!!)
+        if (isloggedIn)
         {
-            return SecondViewModel::class.simpleName!!
+            return MoviesPageViewModel::class.simpleName!!
         }
         else
         {
-            return FirstViewModel::class.simpleName!!
+            return LoginPageViewModel::class.simpleName!!
         }
     }
 }

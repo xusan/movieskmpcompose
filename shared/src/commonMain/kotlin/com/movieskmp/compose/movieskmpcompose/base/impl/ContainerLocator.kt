@@ -8,7 +8,7 @@ class ContainerLocator
     {
         var Container: Koin? = null
 
-        inline fun <reified T: Any> Resolve() : T
+        inline fun <reified T : Any> Resolve(): T
         {
             return Container!!.get<T>();
         }

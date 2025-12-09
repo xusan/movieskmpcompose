@@ -10,9 +10,7 @@ class XfColor
 
     private enum class Mode
     {
-        Default,
-        Rgb,
-        Hsl
+        Default, Rgb, Hsl
     }
 
     val IsDefault: Boolean
@@ -137,30 +135,26 @@ class XfColor
 
     fun AddLuminosity(delta: Double): XfColor
     {
-        if (_mode == Mode.Default)
-            throw IllegalStateException("Invalid on Color.Default")
+        if (_mode == Mode.Default) throw IllegalStateException("Invalid on Color.Default")
 
         return XfColor(_hue.toDouble(), _saturation.toDouble(), _luminosity + delta, _a.toDouble(), Mode.Hsl)
     }
 
     fun WithHue(hue: Double): XfColor
     {
-        if (_mode == Mode.Default)
-            throw IllegalStateException("Invalid on Color.Default")
+        if (_mode == Mode.Default) throw IllegalStateException("Invalid on Color.Default")
         return XfColor(hue, _saturation.toDouble(), _luminosity.toDouble(), _a.toDouble(), Mode.Hsl)
     }
 
     fun WithSaturation(saturation: Double): XfColor
     {
-        if (_mode == Mode.Default)
-            throw IllegalStateException("Invalid on Color.Default")
+        if (_mode == Mode.Default) throw IllegalStateException("Invalid on Color.Default")
         return XfColor(_hue.toDouble(), saturation, _luminosity.toDouble(), _a.toDouble(), Mode.Hsl)
     }
 
     fun WithLuminosity(luminosity: Double): XfColor
     {
-        if (_mode == Mode.Default)
-            throw IllegalStateException("Invalid on Color.Default")
+        if (_mode == Mode.Default) throw IllegalStateException("Invalid on Color.Default")
         return XfColor(_hue.toDouble(), _saturation.toDouble(), luminosity, _a.toDouble(), Mode.Hsl)
     }
 
@@ -175,12 +169,9 @@ class XfColor
 
     private fun EqualsInner(color1: XfColor, color2: XfColor): Boolean
     {
-        if (color1._mode == Mode.Default && color2._mode == Mode.Default)
-            return true
-        if (color1._mode == Mode.Default || color2._mode == Mode.Default)
-            return false
-        if (color1._mode == Mode.Hsl && color2._mode == Mode.Hsl)
-            return color1._hue == color2._hue && color1._saturation == color2._saturation && color1._luminosity == color2._luminosity && color1._a == color2._a
+        if (color1._mode == Mode.Default && color2._mode == Mode.Default) return true
+        if (color1._mode == Mode.Default || color2._mode == Mode.Default) return false
+        if (color1._mode == Mode.Hsl && color2._mode == Mode.Hsl) return color1._hue == color2._hue && color1._saturation == color2._saturation && color1._luminosity == color2._luminosity && color1._a == color2._a
         return color1._r == color2._r && color1._g == color2._g && color1._b == color2._b && color1._a == color2._a
     }
 
@@ -200,7 +191,8 @@ class XfColor
 
     fun ToHex(): String
     {
-        fun toHexByte(value: Double): String {
+        fun toHexByte(value: Double): String
+        {
             val intVal = (value * 255).toInt().coerceIn(0, 255)
             val hex = intVal.toString(16).uppercase()
             return if (hex.length == 1) "0$hex" else hex
@@ -225,8 +217,7 @@ class XfColor
         fun FromHex(hex: String): XfColor
         {
             // Undefined
-            if (hex.length < 3)
-                return Default
+            if (hex.length < 3) return Default
             var idx = if (hex[0] == '#') 1 else 0
 
             when (hex.length - idx)
@@ -251,22 +242,13 @@ class XfColor
 
                 6 -> // #rrggbb => ffrrggbb
                 {
-                    return FromRgb(
-                        (ToHex(hex[idx++]) shl 4 or ToHex(hex[idx++])).toInt(),
-                        (ToHex(hex[idx++]) shl 4 or ToHex(hex[idx++])).toInt(),
-                        (ToHex(hex[idx++]) shl 4 or ToHex(hex[idx])).toInt()
-                    )
+                    return FromRgb((ToHex(hex[idx++]) shl 4 or ToHex(hex[idx++])).toInt(), (ToHex(hex[idx++]) shl 4 or ToHex(hex[idx++])).toInt(), (ToHex(hex[idx++]) shl 4 or ToHex(hex[idx])).toInt())
                 }
 
                 8 -> // #aarrggbb
                 {
                     val a1 = ToHex(hex[idx++]) shl 4 or ToHex(hex[idx++])
-                    return FromRgba(
-                        (ToHex(hex[idx++]) shl 4 or ToHex(hex[idx++])).toInt(),
-                        (ToHex(hex[idx++]) shl 4 or ToHex(hex[idx++])).toInt(),
-                        (ToHex(hex[idx++]) shl 4 or ToHex(hex[idx])).toInt(),
-                        a1.toInt()
-                    )
+                    return FromRgba((ToHex(hex[idx++]) shl 4 or ToHex(hex[idx++])).toInt(), (ToHex(hex[idx++]) shl 4 or ToHex(hex[idx++])).toInt(), (ToHex(hex[idx++]) shl 4 or ToHex(hex[idx])).toInt(), a1.toInt())
                 }
 
                 else -> // everything else will result in unexpected results
@@ -276,12 +258,7 @@ class XfColor
 
         fun FromUint(argb: UInt): XfColor
         {
-            return FromRgba(
-                ((argb and 0x00ff0000u) shr 0x10).toByte().toInt(),
-                ((argb and 0x0000ff00u) shr 0x8).toByte().toInt(),
-                (argb and 0x000000ffu).toByte().toInt(),
-                ((argb and 0xff000000u) shr 0x18).toByte().toInt()
-            )
+            return FromRgba(((argb and 0x00ff0000u) shr 0x10).toByte().toInt(), ((argb and 0x0000ff00u) shr 0x8).toByte().toInt(), (argb and 0x000000ffu).toByte().toInt(), ((argb and 0xff000000u) shr 0x18).toByte().toInt())
         }
 
         fun FromRgba(r: Int, g: Int, b: Int, a: Int): XfColor
@@ -389,12 +366,10 @@ class XfColor
         private fun ToHex(c: Char): UInt
         {
             val x = c.code.toUShort()
-            if (x >= '0'.code.toUShort() && x <= '9'.code.toUShort())
-                return (x - '0'.code.toUShort()).toUInt()
+            if (x >= '0'.code.toUShort() && x <= '9'.code.toUShort()) return (x - '0'.code.toUShort()).toUInt()
 
             val xOr = x or 0x20u
-            if (xOr >= 'a'.code.toUShort() && xOr <= 'f'.code.toUShort())
-                return (xOr - 'a'.code.toUShort() + 10u).toUInt()
+            if (xOr >= 'a'.code.toUShort() && xOr <= 'f'.code.toUShort()) return (xOr - 'a'.code.toUShort() + 10u).toUInt()
             return 0u
         }
 
@@ -406,8 +381,7 @@ class XfColor
 
         private fun ConvertToRgb(hue: Float, saturation: Float, luminosity: Float, mode: Mode): RgbResult
         {
-            if (mode != Mode.Hsl)
-                throw IllegalStateException()
+            if (mode != Mode.Hsl) throw IllegalStateException()
 
             if (luminosity == 0f)
             {
@@ -425,18 +399,12 @@ class XfColor
             val clr = floatArrayOf(0f, 0f, 0f)
             for (i in 0 until 3)
             {
-                if (t3[i] < 0)
-                    t3[i] += 1.0f
-                if (t3[i] > 1)
-                    t3[i] -= 1.0f
-                if (6.0 * t3[i] < 1.0)
-                    clr[i] = temp1 + (temp2 - temp1) * t3[i] * 6.0f
-                else if (2.0 * t3[i] < 1.0)
-                    clr[i] = temp2
-                else if (3.0 * t3[i] < 2.0)
-                    clr[i] = temp1 + (temp2 - temp1) * (2.0f / 3.0f - t3[i]) * 6.0f
-                else
-                    clr[i] = temp1
+                if (t3[i] < 0) t3[i] += 1.0f
+                if (t3[i] > 1) t3[i] -= 1.0f
+                if (6.0 * t3[i] < 1.0) clr[i] = temp1 + (temp2 - temp1) * t3[i] * 6.0f
+                else if (2.0 * t3[i] < 1.0) clr[i] = temp2
+                else if (3.0 * t3[i] < 2.0) clr[i] = temp1 + (temp2 - temp1) * (2.0f / 3.0f - t3[i]) * 6.0f
+                else clr[i] = temp1
             }
 
             return RgbResult(clr[0], clr[1], clr[2])

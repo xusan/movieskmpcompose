@@ -13,7 +13,7 @@ open class LoggableService : KoinComponent
     lateinit var specificLogger: ILogging
     var specificLoggerInitialized = false
 
-    fun LogMethodStart(methodName: String, vararg args: Any? )
+    fun LogMethodStart(methodName: String, vararg args: Any?)
     {
         try
         {
@@ -29,14 +29,14 @@ open class LoggableService : KoinComponent
 
     fun InitSpecificlogger(key: String)
     {
-        if(specificLoggerInitialized == false)
+        if (specificLoggerInitialized == false)
         {
             specificLogger = loggingService.CreateSpecificLogger(key)
             specificLoggerInitialized = true
         }
     }
 
-    fun SpecificLogMethodStart(methodName: String, vararg args: Any? )
+    fun SpecificLogMethodStart(methodName: String, vararg args: Any?)
     {
         try
         {
