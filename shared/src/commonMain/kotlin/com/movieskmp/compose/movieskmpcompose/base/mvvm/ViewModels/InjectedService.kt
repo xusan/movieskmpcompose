@@ -10,9 +10,9 @@ import org.koin.core.component.inject
 
 open class InjectedService : KoinComponent
 {
-    val NavigationService: IPageNavigationService by inject ()
-    val EventAggregator: IMessagesCenter by inject ()
-    val LoggingService: ILoggingService  by inject ()
+    val NavigationService: IPageNavigationService by inject()
+    val EventAggregator: IMessagesCenter by inject()
+    val LoggingService: ILoggingService by inject()
     val SnackBarService: ISnackbarService by inject()
 
     //val shareService: IShare by inject()

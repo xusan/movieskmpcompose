@@ -6,11 +6,11 @@ import org.koin.core.component.get
 import org.koin.core.component.inject
 import kotlin.getValue
 
-open class InjectableViewModel: KoinComponent
+open class InjectableViewModel : KoinComponent
 {
     val loggingService: ILoggingService by inject()
 
-    fun LogMethodStart(methodName: String, vararg args: Any? )
+    fun LogMethodStart(methodName: String, vararg args: Any?)
     {
         try
         {

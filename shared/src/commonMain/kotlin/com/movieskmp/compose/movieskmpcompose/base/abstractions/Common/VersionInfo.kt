@@ -1,13 +1,10 @@
 package com.base.abstractions.Common
 
-class VersionInfo private constructor(
-    val major: Int,
-    val minor: Int,
-    val build: Int = -1,
-    val revision: Int = -1
-) : Comparable<VersionInfo> {
+class VersionInfo private constructor(val major: Int, val minor: Int, val build: Int = -1, val revision: Int = -1) : Comparable<VersionInfo>
+{
 
-    init {
+    init
+    {
         require(major >= 0) { "Major version cannot be negative." }
         require(minor >= 0) { "Minor version cannot be negative." }
         if (build != -1) require(build >= 0) { "Build cannot be negative." }
@@ -16,12 +13,7 @@ class VersionInfo private constructor(
 
     constructor(major: Int, minor: Int) : this(major, minor, -1, -1)
     constructor(major: Int, minor: Int, build: Int) : this(major, minor, build, -1)
-    constructor(version: String) : this(
-        parse(version).major,
-        parse(version).minor,
-        parse(version).build,
-        parse(version).revision
-    )
+    constructor(version: String) : this(parse(version).major, parse(version).minor, parse(version).build, parse(version).revision)
 
     //public override fun clone(): Version = Version(major, minor, build, revision)
 
@@ -31,7 +23,8 @@ class VersionInfo private constructor(
     // endregion
 
     // region --- Comparison ---
-    override fun compareTo(other: VersionInfo): Int {
+    override fun compareTo(other: VersionInfo): Int
+    {
         if (major != other.major) return major.compareTo(other.major)
         if (minor != other.minor) return minor.compareTo(other.minor)
         if (build != other.build) return build.compareTo(other.build)
@@ -39,16 +32,15 @@ class VersionInfo private constructor(
         return 0
     }
 
-    override fun equals(other: Any?): Boolean {
+    override fun equals(other: Any?): Boolean
+    {
         if (this === other) return true
         if (other !is VersionInfo) return false
-        return major == other.major &&
-                minor == other.minor &&
-                build == other.build &&
-                revision == other.revision
+        return major == other.major && minor == other.minor && build == other.build && revision == other.revision
     }
 
-    override fun hashCode(): Int {
+    override fun hashCode(): Int
+    {
         var acc = 0
         acc = acc or ((major and 0x0000000F) shl 28)
         acc = acc or ((minor and 0x000000FF) shl 20)
@@ -57,7 +49,8 @@ class VersionInfo private constructor(
         return acc
     }
 
-    override fun toString(): String {
+    override fun toString(): String
+    {
         val parts = mutableListOf(major, minor)
         if (build >= 0) parts.add(build)
         if (revision >= 0) parts.add(revision)
@@ -89,15 +82,15 @@ class VersionInfo private constructor(
             return VersionInfo(0, 0)
         }
 
-        fun parse(input: String): VersionInfo {
+        fun parse(input: String): VersionInfo
+        {
             require(input.isNotBlank()) { "Input cannot be blank" }
             val parts = input.split('.')
-            if (parts.size < 2 || parts.size > 4)
-                throw IllegalArgumentException("Invalid version format: $input")
+            if (parts.size < 2 || parts.size > 4) throw IllegalArgumentException("Invalid version format: $input")
 
-            fun parsePart(s: String, name: String): Int {
-                val v = s.toIntOrNull()
-                    ?: throw IllegalArgumentException("Invalid number in version part: $name = $s")
+            fun parsePart(s: String, name: String): Int
+            {
+                val v = s.toIntOrNull() ?: throw IllegalArgumentException("Invalid number in version part: $name = $s")
                 require(v >= 0) { "Negative version component: $name" }
                 return v
             }
@@ -109,17 +102,19 @@ class VersionInfo private constructor(
             return VersionInfo(major, minor, build, revision)
         }
 
-        fun tryParse(input: String?): VersionInfo? = try {
+        fun tryParse(input: String?): VersionInfo? = try
+        {
             if (input == null) null else parse(input)
-        } catch (_: Exception) {
+        }
+        catch (_: Exception)
+        {
             null
         }
     }
     // endregion
 
     // region --- Operators ---
-    fun compareToNullable(other: VersionInfo?): Int =
-        if (other == null) 1 else compareTo(other)
+    fun compareToNullable(other: VersionInfo?): Int = if (other == null) 1 else compareTo(other)
 
     operator fun component1() = major
     operator fun component2() = minor
@@ -133,7 +128,8 @@ class VersionInfo private constructor(
 }
 
 // region --- Operators for global use ---
-operator fun VersionInfo?.compareTo(other: VersionInfo?): Int {
+operator fun VersionInfo?.compareTo(other: VersionInfo?): Int
+{
     if (this == null) return if (other == null) 0 else -1
     return this.compareToNullable(other)
 }

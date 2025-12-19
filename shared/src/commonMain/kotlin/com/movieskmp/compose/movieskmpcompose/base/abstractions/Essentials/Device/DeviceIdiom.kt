@@ -44,14 +44,12 @@ class DeviceIdiom private constructor(private val deviceIdiom: String)
          * @param deviceIdiom The idiom name of the device.
          * @return A new instance of DeviceIdiom with the specified idiom type.
          */
-        fun Create(deviceIdiom: String): DeviceIdiom =
-            DeviceIdiom(deviceIdiom)
+        fun Create(deviceIdiom: String): DeviceIdiom = DeviceIdiom(deviceIdiom)
     }
 
     init
     {
-        if (deviceIdiom.isEmpty())
-            throw IllegalArgumentException("deviceIdiom")
+        if (deviceIdiom.isEmpty()) throw IllegalArgumentException("deviceIdiom")
     }
 
     /**
@@ -59,29 +57,24 @@ class DeviceIdiom private constructor(private val deviceIdiom: String)
      * @param other DeviceIdiom object to compare with.
      * @return true if they are equal, otherwise false.
      */
-    fun Equals(other: DeviceIdiom): Boolean =
-        Equals(other.deviceIdiom)
+    fun Equals(other: DeviceIdiom): Boolean = Equals(other.deviceIdiom)
 
-    internal fun Equals(other: String): Boolean =
-        deviceIdiom == other
+    internal fun Equals(other: String): Boolean = deviceIdiom == other
 
     /**
      * Compares the underlying DeviceIdiom instances.
      */
-    override fun equals(other: Any?): Boolean =
-        other is DeviceIdiom && Equals(other)
+    override fun equals(other: Any?): Boolean = other is DeviceIdiom && Equals(other)
 
     /**
      * Gets the hash code for this idiom instance.
      * @return The computed hash code for this device idiom or 0 when the device idiom is null.
      */
-    override fun hashCode(): Int =
-        deviceIdiom.hashCode()
+    override fun hashCode(): Int = deviceIdiom.hashCode()
 
     /**
      * Returns a string representation of the current device idiom.
      * @return A string representation of this instance in the format of {device idiom} or an empty string when no device idiom is set.
      */
-    override fun toString(): String =
-        deviceIdiom
+    override fun toString(): String = deviceIdiom
 }

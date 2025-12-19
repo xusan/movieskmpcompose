@@ -26,8 +26,7 @@ class NavRegistrar : KoinComponent
     inline fun <reified TViewModel : PageViewModel, reified TPage : IPage> RegisterPageForNavigation(noinline createPage: () -> TPage, noinline createViewModel: () -> TViewModel)
     {
         // Dynamically register page and viewModel in Koin
-        val pages = module()
-        {
+        val pages = module() {
             factory<TPage> { createPage() }
             factory<TViewModel> { createViewModel() }
         }
@@ -39,16 +38,13 @@ class NavRegistrar : KoinComponent
         // register in navPages
         if (navPages.none { it.vmName == vmName })
         {
-            navPages.add(NavPageInfo(vmName = vmName,
-                                     createPageFactory = { get<TPage>() },
-                                     createVmFactory = { get<TViewModel>() }))
+            navPages.add(NavPageInfo(vmName = vmName, createPageFactory = { get<TPage>() }, createVmFactory = { get<TViewModel>() }))
         }
     }
 
     inline fun <reified TViewModel : PageViewModel> CreatePage(parameters: INavigationParameters): IPage
     {
-        val vmName = TViewModel::class.simpleName
-            ?: throw IllegalArgumentException("ViewModel class has no simple name.")
+        val vmName = TViewModel::class.simpleName ?: throw IllegalArgumentException("ViewModel class has no simple name.")
         return CreatePage(vmName, parameters)
     }
 
@@ -59,7 +55,7 @@ class NavRegistrar : KoinComponent
     {
         val pageInfo = navPages.firstOrNull { it.vmName == vmName }
 
-        if(pageInfo == null)
+        if (pageInfo == null)
         {
             throw IllegalArgumentException("ViewModel '$vmName' was not registered for navigation.")
         }
@@ -80,7 +76,7 @@ class NavRegistrar : KoinComponent
 //val registrar = NavRegistrar()
 //val appModule = module {
 //    single { registrar } // register as a instance
-      //other app services
+//other app services
 //    single<IMyService> { MyServiceImpl() }
 //    single<IDbTransferService> { DbTransferService() }
 //}

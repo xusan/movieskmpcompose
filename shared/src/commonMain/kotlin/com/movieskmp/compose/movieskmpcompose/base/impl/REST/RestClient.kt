@@ -27,8 +27,7 @@ internal class RestClient : LoggableService(), IRestClient
             TimeoutType.VeryHigh -> 120_000L
         }
 
-        val response: HttpResponse = httpClient.request(httpRequest.Url)
-        {
+        val response: HttpResponse = httpClient.request(httpRequest.Url) {
             this.method = when (method)
             {
                 RestMethod.GET -> HttpMethod.Get
@@ -36,12 +35,10 @@ internal class RestClient : LoggableService(), IRestClient
                 RestMethod.PUT -> HttpMethod.Put
                 RestMethod.DELETE -> HttpMethod.Delete
             }
-            timeout()
-            {
+            timeout() {
                 requestTimeoutMillis = timeoutMillis
             }
-            headers()
-            {
+            headers() {
                 append(HttpHeaders.Accept, "application/json")
                 if (!httpRequest.AccessToken.isNullOrEmpty())
                 {
@@ -61,7 +58,6 @@ internal class RestClient : LoggableService(), IRestClient
         val responseContent = response.bodyAsText()
         return responseContent
     }
-
 
 
 }

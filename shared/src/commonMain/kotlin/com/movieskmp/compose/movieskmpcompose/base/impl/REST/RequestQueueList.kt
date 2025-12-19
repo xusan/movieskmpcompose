@@ -34,12 +34,11 @@ internal class RequestQueueList(val loggingService: ILoggingService, private val
         CheckTimeOutRequest();
     }
 
-    override fun add(element: RequestQueueItem) : Boolean
+    override fun add(element: RequestQueueItem): Boolean
     {
         val isAdded = items.add(element)
         //run without await
-        CoroutineScope(Dispatchers.Default).launch()
-        {
+        CoroutineScope(Dispatchers.Default).launch() {
             TryRunNextRequest()
         }
         ResumeTimer()
@@ -68,8 +67,7 @@ internal class RequestQueueList(val loggingService: ILoggingService, private val
         var canStart = false;
         try
         {
-            queueSemaphor.withPermit()
-            {
+            queueSemaphor.withPermit() {
                 val item = items.filter { !it.IsRunning && !it.IsCompleted }.minByOrNull { it.priority.ordinal }  // assuming Priority is enum
 
                 item?.let { nextItem ->
@@ -86,8 +84,7 @@ internal class RequestQueueList(val loggingService: ILoggingService, private val
                     {
                         OnRequestStarted(nextItem)
                         //run without await
-                        CoroutineScope(Dispatchers.Default).launch()
-                        {
+                        CoroutineScope(Dispatchers.Default).launch() {
                             nextItem.RunRequest()
                         }
                     }
@@ -109,13 +106,11 @@ internal class RequestQueueList(val loggingService: ILoggingService, private val
     fun OnItemCompleted(requestQueueItem: RequestQueueItem)
     {
         OnRequestCompleted(requestQueueItem)
-        CoroutineScope(Dispatchers.Default).launch()
-        {
+        CoroutineScope(Dispatchers.Default).launch() {
             for (i in items.indices)
             {
                 val valResult = TryRunNextRequest()
-                if (!valResult)
-                    break
+                if (!valResult) break
             }
         }
     }
@@ -169,7 +164,7 @@ internal class RequestQueueList(val loggingService: ILoggingService, private val
 
     private fun CheckTimeOutRequest()
     {
-        if(items.count() == 0)
+        if (items.count() == 0)
         {
             StopTimer()
             return

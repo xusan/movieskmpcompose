@@ -5,12 +5,14 @@ import kotlin.native.ObjCName
 
 @OptIn(ExperimentalObjCName::class)
 @ObjCName(name = "IMediaPickerService", exact = true)
-interface IMediaPickerService {
+interface IMediaPickerService
+{
     suspend fun GetPhotoAsync(options: MediaOptions = MediaOptions()): MediaFile?
     suspend fun TakePhotoAsync(options: MediaOptions = MediaOptions()): MediaFile?
 }
 
-enum class MediaSource { CAMERA, GALLERY }
+enum class MediaSource
+{ CAMERA, GALLERY }
 
 class MediaOptions
 {
@@ -24,9 +26,4 @@ class MediaOptions
 }
 
 
-
-class MediaFile(
-    val FilePath: String,
-    val MimeType: String?,
-    val ByteData: ByteArray? = null
-)
+class MediaFile(val FilePath: String, val MimeType: String?, val ByteData: ByteArray? = null)

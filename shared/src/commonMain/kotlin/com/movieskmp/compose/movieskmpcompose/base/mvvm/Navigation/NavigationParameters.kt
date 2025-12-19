@@ -6,10 +6,12 @@ class NavigationParameters : INavigationParameters
     {
 
     }
+
     constructor(ket: String, value: Any?)
     {
         add(ket, value)
     }
+
     constructor(builder: NavigationParameters.() -> Unit = {})
     {
         builder()

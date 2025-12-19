@@ -5,12 +5,8 @@ import kotlin.math.min
 import kotlin.math.max
 import kotlin.math.round
 
-data class Rect(
-    var X: Double = 0.0,
-    var Y: Double = 0.0,
-    var Width: Double = 0.0,
-    var Height: Double = 0.0
-) {
+data class Rect(var X: Double = 0.0, var Y: Double = 0.0, var Width: Double = 0.0, var Height: Double = 0.0)
+{
     constructor(loc: Point, sz: Size) : this(loc.X, loc.Y, sz.Width, sz.Height)
 
     val Top: Double get() = Y
@@ -25,14 +21,16 @@ data class Rect(
 
     var Size: Size
         get() = Size(Width, Height)
-        set(value) {
+        set(value)
+        {
             Width = value.Width
             Height = value.Height
         }
 
     var Location: Point
         get() = Point(X, Y)
-        set(value) {
+        set(value)
+        {
             X = value.X
             Y = value.Y
         }
@@ -41,16 +39,17 @@ data class Rect(
 
     fun Equals(other: Rect): Boolean = X.equals(other.X) && Y.equals(other.Y) && Width.equals(other.Width) && Height.equals(other.Height)
 
-    override fun equals(other: Any?): Boolean {
-        if (other == null)
-            return false
+    override fun equals(other: Any?): Boolean
+    {
+        if (other == null) return false
 
         return other is Rect && Equals(other) || other is Rectangle && Equals(other)
     }
 
     fun Equals(other: Rectangle): Boolean = X.equals(other.X) && Y.equals(other.Y) && Width.equals(other.Width) && Height.equals(other.Height)
 
-    override fun hashCode(): Int {
+    override fun hashCode(): Int
+    {
         var hashCode = X.hashCode()
         hashCode = (hashCode * 397) xor Y.hashCode()
         hashCode = (hashCode * 397) xor Width.hashCode()
@@ -74,7 +73,8 @@ data class Rect(
     // Inflate and Offset
     fun Inflate(sz: Size): Rect = Inflate(sz.Width, sz.Height)
 
-    fun Inflate(width: Double, height: Double): Rect {
+    fun Inflate(width: Double, height: Double): Rect
+    {
         val r = this.copy()
         r.X -= width
         r.Y -= height
@@ -83,7 +83,8 @@ data class Rect(
         return r
     }
 
-    fun Offset(dx: Double, dy: Double): Rect {
+    fun Offset(dx: Double, dy: Double): Rect
+    {
         val r = this.copy()
         r.X += dx
         r.Y += dy
@@ -94,27 +95,29 @@ data class Rect(
 
     fun Round(): Rect = Rect(round(X), round(Y), round(Width), round(Height))
 
-    fun Deconstruct(): DeconstructedRect {
+    fun Deconstruct(): DeconstructedRect
+    {
         return DeconstructedRect(X, Y, Width, Height)
     }
 
     override fun toString(): String = "{X=$X Y=$Y Width=$Width Height=$Height}"
 
-    companion object {
+    companion object
+    {
         var Zero = Rect()
 
         fun FromLTRB(left: Double, top: Double, right: Double, bottom: Double): Rect = Rect(left, top, right - left, bottom - top)
 
         fun Union(r1: Rect, r2: Rect): Rect = FromLTRB(min(r1.Left, r2.Left), min(r1.Top, r2.Top), max(r1.Right, r2.Right), max(r1.Bottom, r2.Bottom))
 
-        fun Intersect(r1: Rect, r2: Rect): Rect {
+        fun Intersect(r1: Rect, r2: Rect): Rect
+        {
             val x = max(r1.X, r2.X)
             val y = max(r1.Y, r2.Y)
             val width = min(r1.Right, r2.Right) - x
             val height = min(r1.Bottom, r2.Bottom) - y
 
-            if (width < 0 || height < 0)
-                return Zero
+            if (width < 0 || height < 0) return Zero
 
             return Rect(x, y, width, height)
         }

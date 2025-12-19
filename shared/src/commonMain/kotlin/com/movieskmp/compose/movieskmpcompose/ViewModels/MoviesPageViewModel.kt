@@ -55,8 +55,6 @@ class MoviesPageViewModel(injectedService: PageInjectedServices) : AppPageViewMo
         authErrorEvent = Services.EventAggregator.GetEvent<AuthErrorEvent> { AuthErrorEvent() }
         movieCellUpdatedEvent.Subscribe(::OnMovieCellItemUpdatedEvent)
         authErrorEvent.Subscribe (::HandleAuthErrorEvent)
-
-
     }
 
     override fun Initialize(parameters: INavigationParameters)

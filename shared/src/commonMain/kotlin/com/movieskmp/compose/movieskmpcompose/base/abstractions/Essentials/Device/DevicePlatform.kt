@@ -70,14 +70,12 @@ class DevicePlatform private constructor(private val devicePlatform: String)
          * @param devicePlatform The device platform identifier.
          * @return A new instance of DevicePlatform with the specified platform identifier.
          */
-        fun Create(devicePlatform: String): DevicePlatform =
-            DevicePlatform(devicePlatform)
+        fun Create(devicePlatform: String): DevicePlatform = DevicePlatform(devicePlatform)
     }
 
     init
     {
-        if (devicePlatform.isEmpty())
-            throw IllegalArgumentException("devicePlatform")
+        if (devicePlatform.isEmpty()) throw IllegalArgumentException("devicePlatform")
     }
 
     /**
@@ -85,28 +83,23 @@ class DevicePlatform private constructor(private val devicePlatform: String)
      * @param other DevicePlatform object to compare with.
      * @return true if they are equal, otherwise false.
      */
-    fun Equals(other: DevicePlatform): Boolean =
-        Equals(other.devicePlatform)
+    fun Equals(other: DevicePlatform): Boolean = Equals(other.devicePlatform)
 
-    internal fun Equals(other: String): Boolean =
-        devicePlatform == other
+    internal fun Equals(other: String): Boolean = devicePlatform == other
 
-    override fun equals(other: Any?): Boolean =
-        other is DevicePlatform && Equals(other)
+    override fun equals(other: Any?): Boolean = other is DevicePlatform && Equals(other)
 
     /**
      * Gets the hash code for this platform instance.
      * @return The computed hash code for this device platform or 0 when the device platform is null.
      */
-    override fun hashCode(): Int =
-        devicePlatform.hashCode()
+    override fun hashCode(): Int = devicePlatform.hashCode()
 
     /**
      * Returns a string representation of the current value of the device platform.
      * @return A string representation of this instance in the format of {device platform} or an empty string when no device platform is set.
      */
-    override fun toString(): String =
-        devicePlatform
+    override fun toString(): String = devicePlatform
 }
 
 /**
@@ -115,5 +108,4 @@ class DevicePlatform private constructor(private val devicePlatform: String)
  * @param right Right to compare.
  * @return true if objects are equal, otherwise false.
  */
-operator fun DevicePlatform.compareTo(right: DevicePlatform): Int =
-    if (this.Equals(right)) 0 else 1
+operator fun DevicePlatform.compareTo(right: DevicePlatform): Int = if (this.Equals(right)) 0 else 1
