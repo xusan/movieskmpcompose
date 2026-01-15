@@ -28,11 +28,14 @@ The goal of this project is to demonstrate my experience in creating **beautiful
 
 ### Other Implementations
 
-- **MoviesDemo (KMP – Fragment / UIKit)**  
-  https://github.com/xusan/movieskmpcompose
-  
-- **MoviesDemo (Swift – SwiftUI)**  
+- **MoviesDemo (Flutter)**  
+  https://github.com/devperson/MoviesFlutter
+
+  - **MoviesDemo (Swift – SwiftUI)**  
   https://github.com/devperson/MoviesSwift
+  
+- **MoviesDemo (KMP – Fragment / UIKit)**  
+  https://github.com/xusan/MoviesKmpSimplified
   
 - **MoviesDemo (.NET – Fragment / UIKit)**  
   https://github.com/devperson/MyDemoApp
