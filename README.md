@@ -31,7 +31,7 @@ The goal of this project is to demonstrate my experience in creating **beautiful
 - **MoviesDemo (Flutter)**  
   https://github.com/devperson/MoviesFlutter
 
-  - **MoviesDemo (Swift – SwiftUI)**  
+- **MoviesDemo (Swift – SwiftUI)**  
   https://github.com/devperson/MoviesSwift
   
 - **MoviesDemo (KMP – Fragment / UIKit)**  
