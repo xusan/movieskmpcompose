@@ -52,11 +52,9 @@ struct MovieDetailPage: View
             // Filter for THIS view model
             if args.vmName != vmName { return }
             
-            // Equivalent to: OnViewModelPropertyChanged
-            if args.propertyName == AddEditMoviePageViewModel.companion.UPDATE_ITEM
+            if args.propertyName == "Model"
             {
                 self.model = Vm.Model
-                //vmObs.objectWillChange.send()
             }
         }
     }
