@@ -12,7 +12,8 @@ import io.realm.kotlin.types.RealmObject
 import org.koin.core.component.inject
 import kotlin.reflect.KClass
 
-open class BaseRepository<TEntity, Tb>(private val tableClass: KClass<Tb>) : LoggableService(), IRepository<TEntity> where TEntity : IEntity, Tb : RealmObject, Tb : ITable
+open class BaseRepository<TEntity, Tb>(private val tableClass: KClass<Tb>) : LoggableService(), IRepository<TEntity>
+where TEntity : IEntity, Tb : RealmObject, Tb: ITable
 {
     protected var realm: Realm? = null
     protected val mapper: IRepoMapper<TEntity, Tb> by inject()
@@ -25,9 +26,11 @@ open class BaseRepository<TEntity, Tb>(private val tableClass: KClass<Tb>) : Log
         EnsureInitalized()
 
         var results: List<Tb>? = null;
-        if (count > 0)
+        if(count > 0)
         {
-            results = realm!!.query(tableClass, "id > $0 SORT(id ASC)", skip).limit(count).find()
+            results = realm!!.query(tableClass, "id > $0 SORT(id ASC)", skip)
+                .limit(count)
+                .find()
         }
         else
         {
@@ -42,11 +45,14 @@ open class BaseRepository<TEntity, Tb>(private val tableClass: KClass<Tb>) : Log
         LogMethodStart(::AddAllAsync.name, entities)
         EnsureInitalized()
         var lastId = -1;
-        realm!!.write() {
-            entities.forEach { entity ->
+        realm!!.write()
+        {
+            entities.forEach{ entity ->
 
-                if (lastId != -1) lastId++;
-                else lastId = GetNextId();
+                if(lastId != -1)
+                    lastId ++;
+                else
+                    lastId = GetNextId();
                 entity.Id = lastId
 
                 val tbRow = mapper.ToTb(entity);
@@ -61,7 +67,7 @@ open class BaseRepository<TEntity, Tb>(private val tableClass: KClass<Tb>) : Log
         LogMethodStart(::FindById.name, id)
         EnsureInitalized()
         val tb = realm!!.query(tableClass, "Id == $0", id).first().find()
-        if (tb != null)
+        if(tb != null)
         {
             val entity = mapper.ToEntity(tb)
             return entity;
@@ -69,7 +75,7 @@ open class BaseRepository<TEntity, Tb>(private val tableClass: KClass<Tb>) : Log
         return null;
     }
 
-    override suspend fun AddAsync(entity: TEntity): Int
+    override suspend fun AddAsync(entity: TEntity) : Int
     {
         LogMethodStart(::AddAsync.name, entity)
         EnsureInitalized()
@@ -81,7 +87,7 @@ open class BaseRepository<TEntity, Tb>(private val tableClass: KClass<Tb>) : Log
     }
 
     /** Update via mapping */
-    override suspend fun UpdateAsync(entity: TEntity): Int
+    override suspend fun UpdateAsync(entity: TEntity) : Int
     {
         LogMethodStart(::UpdateAsync.name, entity)
         EnsureInitalized()
@@ -96,25 +102,25 @@ open class BaseRepository<TEntity, Tb>(private val tableClass: KClass<Tb>) : Log
             }
         }
 
-        return if (hasValue) 1 else 0;
+        return if(hasValue) 1 else 0;
     }
 
     /** Delete by id */
-    override suspend fun RemoveAsync(entity: TEntity): Int
+    override suspend fun RemoveAsync(entityId: Int) : Int
     {
-        LogMethodStart(::RemoveAsync.name, entity)
+        LogMethodStart(::RemoveAsync.name, entityId)
         EnsureInitalized()
         var hasValue = false;
         realm!!.write() //we can call with !! because we have EnsureInitalized() check
         {
-            val tb = query(tableClass, "Id == $0", entity.Id).first().find()
+            val tb = query(tableClass, "Id == $0", entityId).first().find()
             if (tb != null)
             {
                 hasValue = true;
                 delete(tb)
             }
         }
-        return if (hasValue) 1 else 0;
+        return if(hasValue) 1 else 0;
     }
 
     override suspend fun ClearAsync(reason: String): Int
@@ -146,7 +152,7 @@ open class BaseRepository<TEntity, Tb>(private val tableClass: KClass<Tb>) : Log
 
     }
 
-    private fun IsDbClosed(): Boolean
+    private fun IsDbClosed() : Boolean
     {
         try
         {
@@ -158,10 +164,10 @@ open class BaseRepository<TEntity, Tb>(private val tableClass: KClass<Tb>) : Log
         }
     }
 
-    private fun GetNextId(): Int
+    private fun GetNextId() : Int
     {
         val maxId = realm!!.query(tableClass).max("Id", Int::class).find() ?: 0
-        if (maxId == 0)
+        if(maxId == 0)
         {
             return 1;
         }
