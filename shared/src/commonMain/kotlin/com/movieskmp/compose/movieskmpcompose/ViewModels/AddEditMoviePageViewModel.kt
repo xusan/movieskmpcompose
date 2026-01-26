@@ -159,7 +159,8 @@ class AddEditMoviePageViewModel(injectedService: PageInjectedServices) : MovieDe
             {
                 val result = movieService.AddAsync(this.Model?.Name!!, this.Model?.Overview!!, this.Model?.PosterUrl);
                 success = result.Success
-                movieId = result.ValueOrThrow.Id
+                if(result.Success)
+                  movieId = result.ValueOrThrow
                 error = result.Exception
             }
 

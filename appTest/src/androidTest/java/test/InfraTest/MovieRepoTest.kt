@@ -83,7 +83,7 @@ class MovieRepoTest : DeviceInfrastructureTest()
         val movieRepo = get<IRepository<Movie>>();
         var entity = movieRepo.FindById(1);
         assertTrue(entity != null, "Can not find entity")
-        val deletedCount = movieRepo.RemoveAsync(entity!!);
+        val deletedCount = movieRepo.RemoveAsync(entity.Id);
         assertTrue { deletedCount > 0 }
 
         entity = movieRepo.FindById(1);

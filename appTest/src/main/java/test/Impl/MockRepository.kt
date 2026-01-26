@@ -31,7 +31,7 @@ class MockRepository : IRepository<Movie>
         return 1
     }
 
-    override suspend fun RemoveAsync(entity: Movie): Int
+    override suspend fun RemoveAsync(entityId: Int): Int
     {
         return 1
     }
