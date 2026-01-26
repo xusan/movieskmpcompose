@@ -72,7 +72,11 @@ struct AddEditMoviePage: View
             
             guard args.vmName == vmName else { return }
             
-            if args.propertyName == AddEditMoviePageViewModel.companion.PhotoChangedEvent
+            if args.propertyName == "Model"
+            {
+                loadInitialModel()
+            }
+            else if args.propertyName == AddEditMoviePageViewModel.companion.PhotoChangedEvent
             {
                 model = Vm.Model     // refresh UI image
                 vmObs.objectWillChange.send()
